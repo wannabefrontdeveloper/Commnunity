@@ -126,24 +126,37 @@ footer p {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 20px;
   text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), 
+              box-shadow 0.3s ease, 
+              background-color 0.3s ease;
   cursor: pointer;
   width: 120px;
 }
 
-.gallery-card h3 {
-  font-size: 18px;
-  margin-bottom: 10px;
-}
-
-.gallery-card p {
-  font-size: 14px;
-  color: #666;
-}
-
 .gallery-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+  transform: translateY(-8px) scale(1.05); /* 살짝 튀어오르며 확대 */
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+  background-color: #f9f9f9; /* 배경 색상 부드럽게 변경 */
+}
+
+.gallery-card:active {
+  transform: translateY(0) scale(0.95); /* 눌렀을 때 살짝 작아짐 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.1s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* 말랑말랑한 애니메이션 추가 */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px) scale(1.05);
+  }
+}
+
+.gallery-card.bouncy {
+  animation: bounce 1s infinite;
 }
 
 /* 배경 및 기본 스타일 */
