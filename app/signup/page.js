@@ -43,7 +43,7 @@ export default function SignupPage() {
 
     try {
       // 서버로 POST 요청 보내기
-      const response = await axios.post('http://127.0.0.1:8000/register', requestData);
+      const response = await axios.post('http://127.0.0.1:8000/api/register', requestData);
 
       console.log('회원가입 성공:', response.data);
       alert('회원가입이 완료되었습니다!');
