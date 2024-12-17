@@ -35,11 +35,12 @@ export default function LoginPage() {
         localStorage.setItem('token', token);
   
         alert('로그인 성공!');
+        
+        // 메인 페이지로 이동 후 리로드
         router.push('/');
-
         setTimeout(() => {
-          window.location.reload();
-        }, 0);
+          window.location.href = '/';
+        }, 100);
       } else {
         alert(`로그인 실패: ${response.data.message || '서버 오류'}`);
       }
