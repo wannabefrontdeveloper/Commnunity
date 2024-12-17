@@ -2,13 +2,14 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation'; // useRouter 가져오기
+import axios from 'axios'; // axios 가져오기
 import styles from './login.module.css'; // styles 객체로 가져오기
 
 export default function LoginPage() {
   const router = useRouter(); // useRouter 인스턴스 생성
 
   const [formData, setFormData] = useState({
-    username: '',
+    email: '',
     password: '',
   });
 
@@ -20,10 +21,30 @@ export default function LoginPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('로그인 정보:', formData);
-    alert(`아이디: ${formData.username}\n비밀번호: ${formData.password}`);
+    console.log('전송하는 데이터:', formData);
+  
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/api/login', formData);
+  
+      if (response.status === 200) {
+        const token = response.data.access_token; // access_token 가져오기
+        console.log('서버 응답 토큰:', token);
+        alert('로그인 성공!');
+        router.push('/'); // 메인 페이지로 이동
+      } else {
+        alert(`로그인 실패: ${response.data.message || '서버 오류'}`);
+      }
+    } catch (error) {
+      if (error.response) {
+        console.error('서버 오류:', error.response.data);
+        alert(`로그인 실패: ${error.response.data.message || '오류 발생'}`);
+      } else {
+        console.error('네트워크 에러:', error.message);
+        alert('서버 연결에 실패했습니다.');
+      }
+    }
   };
 
   const handleSignUp = () => {
@@ -35,11 +56,11 @@ export default function LoginPage() {
       <h1 className={styles.loginHeading}>로그인</h1>
       <form onSubmit={handleSubmit} className={styles.loginForm}>
         <label className={styles.formLabel}>
-          아이디:
+          이메일:
           <input
-            type="text"
-            name="username"
-            value={formData.username}
+            type="email"
+            name="email"
+            value={formData.email}
             onChange={handleChange}
             required
             className={styles.inputField}
