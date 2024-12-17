@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation'; // useRouter 가져오기
-import axios from 'axios'; // axios 가져오기
-import styles from './login.module.css'; // styles 객체로 가져오기
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import styles from './login.module.css';
 
 export default function LoginPage() {
-  const router = useRouter(); // useRouter 인스턴스 생성
+  const router = useRouter();
 
   const [formData, setFormData] = useState({
     email: '',
@@ -29,10 +29,17 @@ export default function LoginPage() {
       const response = await axios.post('http://127.0.0.1:8000/api/login', formData);
   
       if (response.status === 200) {
-        const token = response.data.access_token; // access_token 가져오기
+        const token = response.data.access_token;
         console.log('서버 응답 토큰:', token);
+  
+        localStorage.setItem('token', token);
+  
         alert('로그인 성공!');
-        router.push('/'); // 메인 페이지로 이동
+        router.push('/');
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 0);
       } else {
         alert(`로그인 실패: ${response.data.message || '서버 오류'}`);
       }
@@ -46,9 +53,9 @@ export default function LoginPage() {
       }
     }
   };
-
+  
   const handleSignUp = () => {
-    router.push('/signup'); // 회원가입 페이지로 이동
+    router.push('/signup');
   };
 
   return (
