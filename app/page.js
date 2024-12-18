@@ -6,7 +6,7 @@ export default async function HomePage() {
   try {
     const response = await axios.get('http://127.0.0.1:8000/api/regions');
     galleries = response.data;
-    console.log('서버에서 받은 정보:', response.data);
+    // console.log('서버에서 받은 정보:', response.data);
   } catch (error) {
     console.error('Failed to fetch galleries:', error);
   }
