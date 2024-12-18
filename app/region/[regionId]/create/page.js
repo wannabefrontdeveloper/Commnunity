@@ -1,5 +1,5 @@
 export default function CreateGalleryPage({ params }) {
-    const { regionId } = params; // URL 파라미터에서 regionId 가져오기
+    const { regionId } = params;
   
     return (
       <div style={{ padding: '20px', textAlign: 'center' }}>

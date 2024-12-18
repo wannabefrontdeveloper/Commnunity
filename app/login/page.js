@@ -36,7 +36,6 @@ export default function LoginPage() {
   
         alert('로그인 성공!');
         
-        // 메인 페이지로 이동 후 리로드
         router.push('/');
         setTimeout(() => {
           window.location.href = '/';

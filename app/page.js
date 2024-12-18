@@ -4,7 +4,6 @@ import Link from 'next/link';
 export default async function HomePage() {
   let galleries = [];
   try {
-    // 서버에서 데이터 가져오기
     const response = await axios.get('http://127.0.0.1:8000/api/regions');
     galleries = response.data;
     console.log('서버에서 받은 정보:', response.data);

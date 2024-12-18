@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import axios from 'axios'; // axios 가져오기
+import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import styles from './signup.module.css';
 
@@ -14,7 +14,7 @@ export default function SignupPage() {
     password_confirmation: '',
   });
 
-  const [error, setError] = useState(''); // 에러 상태 추가
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,15 +39,14 @@ export default function SignupPage() {
       password_confirmation: formData.password_confirmation,
     };
 
-    console.log('서버에 전송할 데이터:', requestData); // 서버로 전송할 데이터 출력
+    console.log('서버에 전송할 데이터:', requestData);
 
     try {
-      // 서버로 POST 요청 보내기
       const response = await axios.post('http://127.0.0.1:8000/api/register', requestData);
 
       console.log('회원가입 성공:', response.data);
       alert('회원가입이 완료되었습니다!');
-      router.push('/login'); // 로그인 페이지로 이동
+      router.push('/login');
     } catch (err) {
       console.error('회원가입 실패:', err.response?.data || err.message);
       setError(err.response?.data?.message || '회원가입에 실패했습니다.');
