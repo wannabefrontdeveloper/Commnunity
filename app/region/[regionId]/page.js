@@ -4,6 +4,7 @@ import CreateGalleryButton from './CreateGalleryButton';
 export default async function GalleryPage({ params }) {
   const { regionId } = params;
   let galleryData = null;
+  let regionName = '';
 
   console.log('전달된 regionId:', regionId);
 
@@ -12,15 +13,20 @@ export default async function GalleryPage({ params }) {
       params: { region_id: regionId },
     });
     galleryData = response.data;
+
+    const region = galleryData.find((item) => item.id === Number(regionId));
+    if (region) {
+      regionName = region.name;
+    }
   } catch (error) {
-    console.error('Failed to fetch gallery data:', error.response?.data || error.message);
+    // console.error('Failed to fetch gallery data:', error.response?.data || error.message);
     galleryData = { error: '갤러리가 존재하지 않습니다.' };
   }
 
   return (
     <div style={{ padding: '20px' }}>
       <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>
-        {galleryData?.name || '갤러리 목록'}
+        {'갤러리 목록'}
       </h1>
       <p style={{ textAlign: 'center' }}>
         관심있는 캠핑 지역 갤러리를 선택해주세요!

@@ -2,11 +2,11 @@
 
 import { useRouter } from 'next/navigation';
 
-export default function CreateGalleryButton({ regionId }) {
+export default function CreateGalleryButton({ regionId, regionName }) {
   const router = useRouter();
 
   const handleCreateGallery = () => {
-    console.log(`갤러리 생성 버튼 클릭됨 - 지역 ID: ${regionId}`);
+    console.log(`갤러리 생성 버튼 클릭됨 - 지역 ID: ${regionId}, 지역 이름: ${regionName}`);
     router.push(`/region/${regionId}/create`);
   };
 
@@ -22,7 +22,7 @@ export default function CreateGalleryButton({ regionId }) {
         cursor: 'pointer',
       }}
     >
-      갤러리 생성하기
+      {regionName} 갤러리 생성하기
     </button>
   );
 }
