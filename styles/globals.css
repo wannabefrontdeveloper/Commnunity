@@ -110,7 +110,7 @@ footer p {
 
 
 /* 갤러리 그리드 */
-.gallery-grid {
+.region-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
@@ -119,7 +119,7 @@ footer p {
 }
 
 /* 갤러리 카드 */
-.gallery-card {
+.region-card {
   background-color: #ffffff;
   border: 1px solid #ddd;
   border-radius: 10px;
@@ -133,13 +133,13 @@ footer p {
   width: 120px;
 }
 
-.gallery-card:hover {
+.region-card:hover {
   transform: translateY(-8px) scale(1.05);
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
   background-color: #f9f9f9;
 }
 
-.gallery-card:active {
+.region-card:active {
   transform: translateY(0) scale(0.95);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.1s cubic-bezier(0.25, 1, 0.5, 1);
@@ -154,7 +154,7 @@ footer p {
   }
 }
 
-.gallery-card.bouncy {
+.region-card.bouncy {
   animation: bounce 1s infinite;
 }
 
