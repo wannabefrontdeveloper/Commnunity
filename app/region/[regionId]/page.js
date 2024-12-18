@@ -7,7 +7,6 @@ export default async function GalleryPage({ params }) {
   let regionName = '';
 
   try {
-    // API 요청: region_id 전달
     const response = await axios.get(`http://127.0.0.1:8000/api/regions/gallery`, {
       params: { region_id: regionId },
     });

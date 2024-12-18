@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { use } from 'react';
-import styles from './create.module.css'; // CSS 모듈 import
+import styles from './create.module.css';
 
 export default function CreateGalleryPage({ params }) {
   const unwrappedParams = use(params);
