@@ -28,6 +28,8 @@ export default function LoginPage() {
     try {
       const response = await axios.post('http://127.0.0.1:8000/api/login', formData);
   
+      console.log('전체 서버 응답 데이터:', response);
+  
       if (response.status === 200) {
         const token = response.data.access_token;
         console.log('서버 응답 토큰:', token);
@@ -35,7 +37,7 @@ export default function LoginPage() {
         localStorage.setItem('token', token);
   
         alert('로그인 성공!');
-        
+  
         window.location.href = `/`;
         setTimeout(() => {
           window.location.href = '/';
@@ -45,10 +47,8 @@ export default function LoginPage() {
       }
     } catch (error) {
       if (error.response) {
-        console.error('서버 오류:', error.response.data);
         alert(`로그인 실패: ${error.response.data.message || '오류 발생'}`);
       } else {
-        console.error('네트워크 에러:', error.message);
         alert('서버 연결에 실패했습니다.');
       }
     }
