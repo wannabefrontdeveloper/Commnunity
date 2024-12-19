@@ -12,22 +12,24 @@ export default async function HomePage() {
   }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>
-        온캠퍼 캠핑 커뮤니티에 오신 걸 환영합니다!
-      </h1>
-      <p style={{ textAlign: 'center', marginBottom: '40px' }}>
-        관심 있는 캠핑 지역을 선택해주세요!
-      </p>
-      <div className="region-grid">
-        {regions.map((region) => (
-          <Link key={region.id} href={`/region/${region.id}`} style={{ textDecoration: "none" }}>
-            <div className="region-card">
-              <h3>{region.name}</h3>
-            </div>
-          </Link>
-        ))}
-      </div>
-    </div>
+    <section className='default-section gallery-section'>
+        <header className="gallery-title-wrap">
+            <h1>
+                온캠퍼 캠핑 커뮤니티에 오신 걸 환영합니다.
+            </h1>
+            <p>
+                관심 있는 캠핑 지역을 선택해주세요!
+            </p>
+        </header>
+        <article className="region-grid">
+            {regions.map((region) => (
+            <Link key={region.id} href={`/region/${region.id}`} style={{ textDecoration: "none" }}>
+                <div className="region-card">
+                    <h3>{region.name}</h3>
+                </div>
+            </Link>
+            ))}
+        </article>
+    </section>
   );
 }

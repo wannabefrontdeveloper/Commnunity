@@ -1,4 +1,5 @@
 import '../styles/globals.css';
+import '../styles/default.css';
 import RootLayoutClient from './RootLayoutClient';
 
 export const metadata = {
