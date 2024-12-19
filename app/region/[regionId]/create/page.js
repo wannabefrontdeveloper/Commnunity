@@ -1,11 +1,10 @@
 'use client';
-
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, use } from 'react';
 import axios from 'axios';
-import { use } from 'react';
 import styles from './create.module.css';
 
 export default function CreateGalleryPage({ params }) {
+  // params를 언래핑
   const unwrappedParams = use(params);
   const { regionId } = unwrappedParams;
 
@@ -15,13 +14,18 @@ export default function CreateGalleryPage({ params }) {
   const [managerId, setManagerId] = useState(1);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  const alertShown = useRef(false); // alert 실행 여부를 추적
+
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
-      setIsAuthenticated(true);
+    if (!token) {
+      if (!alertShown.current) {
+        alert('로그인이 필요한 페이지입니다.');
+        alertShown.current = true; // alert 실행 기록
+        window.location.href = '/login';
+      }
     } else {
-      alert('로그인이 필요한 페이지입니다.');
-      window.location.href = '/login';
+      setIsAuthenticated(true);
     }
 
     async function fetchRegionName() {
@@ -34,24 +38,23 @@ export default function CreateGalleryPage({ params }) {
           setRegionName(region.name);
         }
       } catch (error) {
-        console.error('Failed to fetch region name:', error.response?.data || error.message);
         setRegionName('알 수 없는 지역');
       }
     }
 
-    fetchRegionName();
+    if (token) fetchRegionName();
   }, [regionId]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+  
     const payload = {
       region_id: Number(regionId),
       name: galleryName,
       description: description,
       manager_id: managerId,
     };
-
+  
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(`http://127.0.0.1:8000/api/regions/gallery`, payload, {
@@ -61,8 +64,8 @@ export default function CreateGalleryPage({ params }) {
       });
       console.log('Gallery created successfully:', response.data);
       alert('갤러리가 성공적으로 생성되었습니다!');
+      window.location.href = `/region/${regionId}`;
     } catch (error) {
-      console.error('Failed to create gallery:', error.response?.data || error.message);
       alert('갤러리 생성에 실패했습니다.');
     }
   };

@@ -36,7 +36,7 @@ export default function LoginPage() {
   
         alert('로그인 성공!');
         
-        router.push('/');
+        window.location.href = `/`;
         setTimeout(() => {
           window.location.href = '/';
         }, 100);

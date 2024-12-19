@@ -6,7 +6,7 @@ export default async function HomePage() {
   try {
     const response = await axios.get('http://127.0.0.1:8000/api/regions');
     regions = response.data;
-    // console.log('서버에서 받은 정보:', response.data);
+    //  console.log('서버에서 받은 정보:', response.data);
   } catch (error) {
     console.error('Failed to fetch regions:', error);
   }
@@ -21,7 +21,7 @@ export default async function HomePage() {
       </p>
       <div className="region-grid">
         {regions.map((region) => (
-          <Link key={region.id} href={`/region/${region.id}`}>
+          <Link key={region.id} href={`/region/${region.id}`} style={{ textDecoration: "none" }}>
             <div className="region-card">
               <h3>{region.name}</h3>
             </div>
