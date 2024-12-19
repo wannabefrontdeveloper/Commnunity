@@ -2,13 +2,13 @@ import axios from 'axios';
 import Link from 'next/link';
 
 export default async function HomePage() {
-  let galleries = [];
+  let regions = [];
   try {
     const response = await axios.get('http://127.0.0.1:8000/api/regions');
-    galleries = response.data;
+    regions = response.data;
     // console.log('서버에서 받은 정보:', response.data);
   } catch (error) {
-    console.error('Failed to fetch galleries:', error);
+    console.error('Failed to fetch regions:', error);
   }
 
   return (
@@ -20,7 +20,7 @@ export default async function HomePage() {
         관심 있는 캠핑 지역을 선택해주세요!
       </p>
       <div className="region-grid">
-        {galleries.map((region) => (
+        {regions.map((region) => (
           <Link key={region.id} href={`/region/${region.id}`}>
             <div className="region-card">
               <h3>{region.name}</h3>

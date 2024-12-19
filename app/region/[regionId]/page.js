@@ -1,5 +1,6 @@
 import axios from 'axios';
 import CreateGalleryButton from './CreateGalleryButton';
+import Link from 'next/link';
 
 export default async function GalleryPage({ params }) {
   const { regionId } = params;
@@ -7,7 +8,7 @@ export default async function GalleryPage({ params }) {
   let regionName = '';
 
   try {
-    const response = await axios.get(`http://127.0.0.1:8000/api/regions/gallery`, {
+    const response = await axios.get(`http://127.0.0.1:8000/api/regions/galleryList`, {
       params: { region_id: regionId },
     });
     galleryData = response.data;
@@ -17,7 +18,6 @@ export default async function GalleryPage({ params }) {
       regionName = region.name;
     }
   } catch (error) {
-    console.error('API 요청 중 오류 발생:', error);
     galleryData = { error: '갤러리가 존재하지 않습니다.' };
   }
 
@@ -32,13 +32,19 @@ export default async function GalleryPage({ params }) {
       <div style={{ textAlign: 'center', margin: '20px 0' }}>
         <CreateGalleryButton regionId={regionId} regionName={regionName} />
       </div>
-      <div style={{ marginTop: '20px', textAlign: 'center' }}>
-        {galleryData?.error ? (
-          <p style={{ color: 'red' }}>{galleryData.error}</p>
-        ) : (
-            <pre>{JSON.stringify(galleryData, null, 2)}</pre>
-        )}
-      </div>
+      <div className="gallery-grid">
+  {galleryData?.error ? (
+    <p style={{ color: 'red', textAlign: 'center' }}>{galleryData.error}</p>
+  ) : (
+    galleryData?.map((gallery) => (
+      <Link key={gallery.id} href={`/gallery/${gallery.id}`}>
+        <div className="gallery-card">
+          <h3>{gallery.name}</h3>
+        </div>
+      </Link>
+    ))
+  )}
+</div>
     </div>
   );
 }

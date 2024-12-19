@@ -130,7 +130,7 @@ footer p {
               box-shadow 0.3s ease,
               background-color 0.3s ease;
   cursor: pointer;
-  width: 120px;
+  width: 125px;
 }
 
 .region-card:hover {
@@ -145,6 +145,48 @@ footer p {
   transition: transform 0.1s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
+.region-card.bouncy {
+  animation: bounce 1s infinite;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 10px;
+  justify-items: center;
+}
+
+.gallery-card {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+              box-shadow 0.3s ease,
+              background-color 0.3s ease;
+  cursor: pointer;
+  width: 145px;
+}
+
+.gallery-card:hover {
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+  background-color: #f9f9f9;
+}
+
+.gallery-card:active {
+  transform: translateY(0) scale(0.95);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.1s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.gallery-card.bouncy {
+  animation: bounce 1s infinite;
+}
+
 @keyframes bounce {
   0%, 100% {
     transform: translateY(0);
@@ -152,10 +194,6 @@ footer p {
   50% {
     transform: translateY(-5px) scale(1.05);
   }
-}
-
-.region-card.bouncy {
-  animation: bounce 1s infinite;
 }
 
 /* 배경 및 기본 스타일 */
