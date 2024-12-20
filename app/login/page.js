@@ -7,6 +7,7 @@ import styles from './login.module.css';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { setUser } = useContext(UserContext);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -28,13 +29,13 @@ export default function LoginPage() {
     try {
       const response = await axios.post('http://127.0.0.1:8000/api/login', formData);
   
-      console.log('전체 서버 응답 데이터:', response);
+      console.log('전체 서버 응답 데이터:', response.data);
   
       if (response.status === 200) {
         const token = response.data.access_token;
-        console.log('서버 응답 토큰:', token);
   
         localStorage.setItem('token', token);
+        setUser({ userId: user_id });
   
         alert('로그인 성공!');
   

@@ -59,7 +59,7 @@ export default function SignupPage() {
       {error && <p className={styles.errorMessage}>{error}</p>}
       <form onSubmit={handleSubmit} className={styles.signupForm}>
         <label className={styles.formLabel}>
-          이름:
+          닉네임:
           <input
             type="text"
             name="name"
