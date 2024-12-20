@@ -7,7 +7,6 @@ import styles from './login.module.css';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { setUser } = useContext(UserContext);
 
   const [formData, setFormData] = useState({
     email: '',

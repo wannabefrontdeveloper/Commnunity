@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect} from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import 'react-quill/dist/quill.snow.css';
 import styles from './create.module.css';
-import { UserContext } from '@/contexts/userContext';
 import dynamic from 'next/dynamic';
 
 const ReactQuill = dynamic(() => import('react-quill-new'), {ssr: false});
@@ -13,7 +12,6 @@ const ReactQuill = dynamic(() => import('react-quill-new'), {ssr: false});
 export default function CreatePostPage({ params }) {
   const [galleryId, setGalleryId] = useState(null);
   const router = useRouter();
-  const { user } = useContext(UserContext);
   console.log(user)
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
