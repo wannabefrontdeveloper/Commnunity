@@ -43,13 +43,20 @@ export default function SignupPage() {
 
     try {
       const response = await axios.post('http://127.0.0.1:8000/api/register', requestData);
-
+    
       console.log('회원가입 성공:', response.data);
       alert('회원가입이 완료되었습니다!');
       router.push('/login');
     } catch (err) {
-      console.error('회원가입 실패:', err.response?.data || err.message);
-      setError(err.response?.data?.message || '회원가입에 실패했습니다.');
+      // console.error('회원가입 실패:', err.response?.data || err.message);
+    
+      const errors = err.response?.data?.errors;
+    
+      if (errors) {
+        alert(`이미 존재하는 이메일입니다.`);
+      } else {
+        alert('회원가입에 실패했습니다. 다시 시도해주세요.');
+      }
     }
   };
 
