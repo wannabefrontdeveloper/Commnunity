@@ -26,6 +26,7 @@ export default function RootLayoutClient({ children }) {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user_name");
     setIsLoggedIn(false);
     router.push("/");
   };

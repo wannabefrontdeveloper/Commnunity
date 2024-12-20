@@ -31,12 +31,14 @@ export default function LoginPage() {
       console.log('전체 서버 응답 데이터:', response.data);
   
       if (response.status === 200) {
-        const token = response.data.access_token;
+        const { access_token: token, user_name, user_id } = response.data;
   
         localStorage.setItem('token', token);
-        alert(`로그인 성공! 환영합니다`);
-  
+        localStorage.setItem('user_name', user_name);
+        localStorage.setItem('user_id', user_id);
         
+        alert(`로그인 성공! 환영합니다, ${user_name}님`);
+  
         window.location.href = `/`;
         setTimeout(() => {
           window.location.href = '/';

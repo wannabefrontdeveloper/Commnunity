@@ -1,27 +1,33 @@
 'use client';
 
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import 'react-quill/dist/quill.snow.css';
 import styles from './create.module.css';
 import dynamic from 'next/dynamic';
 
-const ReactQuill = dynamic(() => import('react-quill-new'), {ssr: false});
+const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
 
 export default function CreatePostPage({ params }) {
   const [galleryId, setGalleryId] = useState(null);
   const router = useRouter();
-  console.log(user)
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState(null);
 
-  const userName = '고정된 작성자 이름';
+  const [userName, setUserName] = useState('');
 
   useEffect(() => {
+    const storedUserName = localStorage.getItem('user_name');
+    if (storedUserName) {
+      setUserName(storedUserName);
+    } else {
+      setUserName('알 수 없음'); 
+    }
+
     const fetchParams = async () => {
       const resolvedParams = await params;
       setGalleryId(resolvedParams.galleryId);
@@ -46,6 +52,8 @@ export default function CreatePostPage({ params }) {
       formData.append('gallery_id', galleryId);
       formData.append('title', title);
       formData.append('content', content);
+      formData.append('user_name', userName);
+      formData.append('user_id', user_id);
       if (file) {
         formData.append('file', file);
       }
