@@ -19,13 +19,22 @@ export default function CreatePostPage({ params }) {
   const [file, setFile] = useState(null);
 
   const [userName, setUserName] = useState('');
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     const storedUserName = localStorage.getItem('user_name');
+    const storedUserId = localStorage.getItem('user_id'); // 로컬스토리지에서 user_id 가져오기
+
     if (storedUserName) {
       setUserName(storedUserName);
     } else {
-      setUserName('알 수 없음'); 
+      setUserName('알 수 없음');
+    }
+
+    if (storedUserId) {
+      setUserId(Number(storedUserId)); // user_id를 숫자로 변환
+    } else {
+      setUserId(0); // 기본값 설정
     }
 
     const fetchParams = async () => {
@@ -48,21 +57,20 @@ export default function CreatePostPage({ params }) {
     setLoading(true);
 
     try {
-      const formData = new FormData();
-      formData.append('gallery_id', galleryId);
-      formData.append('title', title);
-      formData.append('content', content);
-      formData.append('user_name', userName);
-      formData.append('user_id', user_id);
-      if (file) {
-        formData.append('file', file);
-      }
+      const postData = {
+        gallery_id: galleryId,
+        user_id: userId,
+        user_name: userName,
+        title: title,
+        content: content,
+      };
 
-      await axios.post('http://127.0.0.1:8000/api/regions/gallery/post', formData, {
+      await axios.post('http://127.0.0.1:8000/api/regions/gallery/post', postData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json',
         },
       });
+      console.log('서버로 보내는 데이터:', postData)
 
       alert('게시글이 성공적으로 작성되었습니다.');
       router.push(`/gallery/${galleryId}`);
@@ -73,14 +81,6 @@ export default function CreatePostPage({ params }) {
       setLoading(false);
     }
   };
-
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
-
-  if (!galleryId) {
-    return <p className={styles.container}>갤러리 정보를 불러오는 중...</p>;
-  }
 
   return (
     <div className={styles.container}>
@@ -120,7 +120,7 @@ export default function CreatePostPage({ params }) {
           <input
             type="file"
             id="file"
-            onChange={handleFileChange}
+            onChange={(e) => setFile(e.target.files[0])}
             className={styles.fileInput}
           />
         </div>
