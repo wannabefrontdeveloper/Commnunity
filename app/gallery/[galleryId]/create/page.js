@@ -20,10 +20,11 @@ export default function CreatePostPage({ params }) {
 
   const [userName, setUserName] = useState('');
   const [userId, setUserId] = useState(null);
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
     const storedUserName = localStorage.getItem('user_name');
-    const storedUserId = localStorage.getItem('user_id'); // 로컬스토리지에서 user_id 가져오기
+    const storedUserId = localStorage.getItem('user_id');
 
     if (storedUserName) {
       setUserName(storedUserName);
@@ -32,9 +33,9 @@ export default function CreatePostPage({ params }) {
     }
 
     if (storedUserId) {
-      setUserId(Number(storedUserId)); // user_id를 숫자로 변환
+      setUserId(Number(storedUserId));
     } else {
-      setUserId(0); // 기본값 설정
+      setUserId(0);
     }
 
     const fetchParams = async () => {
@@ -68,9 +69,10 @@ export default function CreatePostPage({ params }) {
       await axios.post('http://127.0.0.1:8000/api/regions/gallery/post', postData, {
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
       });
-      console.log('서버로 보내는 데이터:', postData)
+      console.log('서버로 보내는 데이터:', postData);
 
       alert('게시글이 성공적으로 작성되었습니다.');
       router.push(`/gallery/${galleryId}`);
