@@ -35,10 +35,9 @@ export default function LoginPage() {
         const token = response.data.access_token;
   
         localStorage.setItem('token', token);
-        setUser({ userId: user_id });
+        alert(`로그인 성공! 환영합니다 ${userName}님! `);
   
-        alert('로그인 성공!');
-  
+        
         window.location.href = `/`;
         setTimeout(() => {
           window.location.href = '/';
