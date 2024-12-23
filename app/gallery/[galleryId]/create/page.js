@@ -40,30 +40,31 @@ export default function CreatePostPage({ params }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
-      const formData = new FormData();
-      formData.append('gallery_id', galleryId);
-      formData.append('user_id', userId);
-      formData.append('user_name', userName);
-      formData.append('title', title);
-      formData.append('content', content);
-      if (file) {
-        formData.append('file', file);
-      }
-      console.log('FormData entries:', [...formData.entries()]); // 추가
+      setLoading(true);
+  
 
+      const data = {
+        gallery_id: galleryId,
+        user_id: userId,
+        user_name: userName,
+        title: title,
+        content: content,
+      };
+  
+      console.log('Request Data:', data);
       const response = await axios.post(
         'http://127.0.0.1:8000/api/regions/gallery/post',
-        formData,
+        data,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
           },
         }
       );
-
+  
       alert(response.data.message || '게시글이 성공적으로 작성되었습니다.');
       router.push(`/gallery/${galleryId}`);
     } catch (err) {

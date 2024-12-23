@@ -52,7 +52,7 @@ export default function CreateGalleryPage({ params }) {
       region_id: Number(regionId),
       name: galleryName,
       description: description,
-      manager_id: managerId,
+      manager_id: 4,
     };
   
     try {

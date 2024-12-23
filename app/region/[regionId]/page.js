@@ -12,7 +12,7 @@ export default async function GalleryPage({ params }) {
       params: { region_id: regionId },
     });
     galleryData = galleryResponse.data;
-    // console.log('갤러리 목록 조회: ', galleryResponse.data);
+     console.log('갤러리 목록 조회: ', galleryResponse.data);
   } catch (error) {
     galleryData = { error: '갤러리가 존재하지 않습니다.' };
   }
@@ -48,12 +48,12 @@ export default async function GalleryPage({ params }) {
           <ul>
             {galleryData?.map((gallery) => (
               <li key={gallery.id} className="gallery-item">
-                <Link href={`/gallery/${gallery.id}`} style={{ textDecoration: "none" }}>
-                  <div>
-                    <h3>{gallery.name}</h3>
-                    <p>{gallery.description}</p>
-                  </div>
-                </Link>
+              <Link href={`/gallery/${gallery.id}?galleryName=${encodeURIComponent(gallery.name)}`} style={{ textDecoration: "none" }}>
+                <div>
+                  <h3>{gallery.name}</h3>
+                  <p>{gallery.description}</p>
+                </div>
+              </Link>
               </li>
             ))}
           </ul>

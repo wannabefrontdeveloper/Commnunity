@@ -1,0 +1,52 @@
+.container {
+    padding: 20px;
+  }
+  
+  .heading {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .loading,
+  .error,
+  .noPosts {
+    text-align: center;
+  }
+  
+  .error {
+    color: red;
+  }
+  
+  .noPosts {
+    color: red;
+  }
+  
+  .postList {
+    margin-top: 20px;
+  }
+  
+  .postItem {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+  }
+  
+  .linkContainer {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .link {
+    text-decoration: none;
+    color: #0070f3;
+    margin-right: 10px;
+  }
+  
+  .button {
+    text-decoration: none;
+    color: #fff;
+    background-color: #0070f3;
+    padding: 10px 20px;
+    border-radius: 5px;
+  }
+  
