@@ -11,11 +11,7 @@ const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
 
 export default function CreatePostPage({ params }) {
   const router = useRouter();
-
-  // Unwrap params using React.use()
   const { galleryId } = React.use(params);
-
-  // 상태 관리
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [error, setError] = useState(null);
@@ -26,7 +22,6 @@ export default function CreatePostPage({ params }) {
   const [userId, setUserId] = useState(0);
 
   useEffect(() => {
-    // localStorage 접근 (클라이언트 환경에서만)
     if (typeof window !== 'undefined') {
       const storedToken = localStorage.getItem('token');
       const storedUserName = localStorage.getItem('user_name');

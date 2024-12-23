@@ -4,28 +4,29 @@ import axios from 'axios';
 import styles from './create.module.css';
 
 export default function CreateGalleryPage({ params }) {
-  // params를 언래핑
   const unwrappedParams = use(params);
   const { regionId } = unwrappedParams;
-
   const [regionName, setRegionName] = useState('');
   const [galleryName, setGalleryName] = useState('');
   const [description, setDescription] = useState('');
-  const [managerId, setManagerId] = useState(1);
+  const [managerId, setManagerId] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const alertShown = useRef(false); // alert 실행 여부를 추적
+  const alertShown = useRef(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('user_id');
+
     if (!token) {
       if (!alertShown.current) {
         alert('로그인이 필요한 페이지입니다.');
-        alertShown.current = true; // alert 실행 기록
+        alertShown.current = true;
         window.location.href = '/login';
       }
     } else {
       setIsAuthenticated(true);
+      setManagerId(Number(userId));
     }
 
     async function fetchRegionName() {
@@ -52,7 +53,7 @@ export default function CreateGalleryPage({ params }) {
       region_id: Number(regionId),
       name: galleryName,
       description: description,
-      manager_id: 4,
+      manager_id: managerId,
     };
   
     try {

@@ -47,14 +47,18 @@ export default async function GalleryPage({ params }) {
         ) : (
           <ul>
             {galleryData?.map((gallery) => (
-              <li key={gallery.id} className="gallery-item">
-              <Link href={`/gallery/${gallery.id}?galleryName=${encodeURIComponent(gallery.name)}`} style={{ textDecoration: "none" }}>
-                <div>
-                  <h3>{gallery.name}</h3>
-                  <p>{gallery.description}</p>
-                </div>
+              <Link
+                href={`/gallery/${gallery.id}?galleryName=${encodeURIComponent(gallery.name)}&regionId=${regionId}`}
+                style={{ textDecoration: "none" }}
+                key={gallery.id}
+              >
+                <li className="gallery-item">
+                  <div>
+                    <h3>{gallery.name}</h3>
+                    <p>{gallery.description}</p>
+                  </div>
+                </li>
               </Link>
-              </li>
             ))}
           </ul>
         )}

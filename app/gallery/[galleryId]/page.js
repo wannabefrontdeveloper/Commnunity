@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import styles from './gallery.module.css';
 import Link from 'next/link';
 
@@ -11,16 +12,21 @@ export default function GalleryDetailPage({ params }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [regionId, setRegionId] = useState(null);
 
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   useEffect(() => {
     const getGalleryDetails = async () => {
       const resolvedParams = await params;
       const resolvedGalleryId = parseInt(resolvedParams.galleryId, 10);
       const resolvedGalleryName = searchParams.get('galleryName');
+      const resolvedRegionId = searchParams.get('regionId');
       setGalleryId(resolvedGalleryId);
       setGalleryName(resolvedGalleryName || '');
+      setRegionId(resolvedRegionId || null);
     };
 
     getGalleryDetails();
@@ -36,7 +42,7 @@ export default function GalleryDetailPage({ params }) {
           });
           setPosts(response.data.data);
         } catch (err) {
-          setError('게시글을 불러오는 중 문제가 발생했습니다.');
+          setError('게시글이 존재하지 않습니다.');
         } finally {
           setLoading(false);
         }
@@ -45,6 +51,45 @@ export default function GalleryDetailPage({ params }) {
       fetchPosts();
     }
   }, [galleryId]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+  }, []);
+
+  const handleDeleteGallery = async () => {
+    if (confirm(`${galleryName} 갤러리를 삭제하시겠습니까?`)) {
+      try {
+        const token = localStorage.getItem('token');
+        const userId = localStorage.getItem('user_id');
+        
+        if (!token || !userId || !regionId) {
+          alert('로그인 후 다시 시도해주세요.');
+          return;
+        }
+  
+        const requestData = {
+          gallery_id: galleryId,
+          manager_id: userId,
+          region_id: regionId,
+        };
+  
+        console.log('보내는 데이터:', requestData);
+  
+        await axios.delete('http://127.0.0.1:8000/api/regions/gallery', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          data: requestData,
+        });
+  
+        alert('갤러리가 삭제되었습니다.');
+        router.push('/');
+      } catch (err) {
+        alert('갤러리를 생성한 회원만 삭제할 수 있습니다.');
+      }
+    }
+  };
 
   if (!galleryId) {
     return <p className={styles.loading}>갤러리 정보를 불러오는 중...</p>;
@@ -82,6 +127,11 @@ export default function GalleryDetailPage({ params }) {
         <Link href={`/gallery/${galleryId}/create`} className={styles.button}>
           글쓰기
         </Link>
+        {isLoggedIn && (
+          <button onClick={handleDeleteGallery} className={styles.deleteButton}>
+            갤러리 삭제하기
+          </button>
+        )}
       </div>
     </div>
   );
