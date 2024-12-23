@@ -10,75 +10,66 @@ import dynamic from 'next/dynamic';
 const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
 
 export default function CreatePostPage({ params }) {
-  const [galleryId, setGalleryId] = useState(null);
   const router = useRouter();
+
+  // Unwrap params using React.use()
+  const { galleryId } = React.use(params);
+
+  // 상태 관리
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState(null);
-
-  const [userName, setUserName] = useState('');
-  const [userId, setUserId] = useState(null);
-  const token = localStorage.getItem('token');
+  const [token, setToken] = useState('');
+  const [userName, setUserName] = useState('알 수 없음');
+  const [userId, setUserId] = useState(0);
 
   useEffect(() => {
-    const storedUserName = localStorage.getItem('user_name');
-    const storedUserId = localStorage.getItem('user_id');
+    // localStorage 접근 (클라이언트 환경에서만)
+    if (typeof window !== 'undefined') {
+      const storedToken = localStorage.getItem('token');
+      const storedUserName = localStorage.getItem('user_name');
+      const storedUserId = localStorage.getItem('user_id');
 
-    if (storedUserName) {
-      setUserName(storedUserName);
-    } else {
-      setUserName('알 수 없음');
+      setToken(storedToken || '');
+      setUserName(storedUserName || '알 수 없음');
+      setUserId(Number(storedUserId) || 0);
     }
-
-    if (storedUserId) {
-      setUserId(Number(storedUserId));
-    } else {
-      setUserId(0);
-    }
-
-    const fetchParams = async () => {
-      const resolvedParams = await params;
-      setGalleryId(resolvedParams.galleryId);
-    };
-
-    fetchParams();
-  }, [params]);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!title || !content) {
-      setError('모든 필드를 입력해주세요.');
-      return;
-    }
-
-    setError(null);
-    setLoading(true);
-
     try {
-      const postData = {
-        gallery_id: galleryId,
-        user_id: userId,
-        user_name: userName,
-        title: title,
-        content: content,
-      };
+      const formData = new FormData();
+      formData.append('gallery_id', galleryId);
+      formData.append('user_id', userId);
+      formData.append('user_name', userName);
+      formData.append('title', title);
+      formData.append('content', content);
+      if (file) {
+        formData.append('file', file);
+      }
+      console.log('FormData entries:', [...formData.entries()]); // 추가
 
-      await axios.post('http://127.0.0.1:8000/api/regions/gallery/post', postData, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-      });
-      console.log('서버로 보내는 데이터:', postData);
+      const response = await axios.post(
+        'http://127.0.0.1:8000/api/regions/gallery/post',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
 
-      alert('게시글이 성공적으로 작성되었습니다.');
+      alert(response.data.message || '게시글이 성공적으로 작성되었습니다.');
       router.push(`/gallery/${galleryId}`);
     } catch (err) {
-      console.error('Error creating post:', err);
-      setError('게시글 작성 중 문제가 발생했습니다.');
+      const errorMessage =
+        err.response?.data?.error || '게시글 작성 중 문제가 발생했습니다.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -89,7 +80,9 @@ export default function CreatePostPage({ params }) {
       <h1 className={styles.title}>갤러리 {galleryId} 글쓰기</h1>
       <form onSubmit={handleSubmit} className={styles.form}>
         <div>
-          <label htmlFor="userName" className={styles.label}>작성자</label>
+          <label htmlFor="userName" className={styles.label}>
+            작성자
+          </label>
           <input
             type="text"
             id="userName"
@@ -99,7 +92,9 @@ export default function CreatePostPage({ params }) {
           />
         </div>
         <div>
-          <label htmlFor="title" className={styles.label}>제목</label>
+          <label htmlFor="title" className={styles.label}>
+            제목
+          </label>
           <input
             type="text"
             id="title"
@@ -110,7 +105,9 @@ export default function CreatePostPage({ params }) {
           />
         </div>
         <div className={styles.quillContainer}>
-          <label htmlFor="content" className={styles.label}>내용</label>
+          <label htmlFor="content" className={styles.label}>
+            내용
+          </label>
           <ReactQuill
             value={content}
             onChange={setContent}
@@ -118,7 +115,9 @@ export default function CreatePostPage({ params }) {
           />
         </div>
         <div>
-          <label htmlFor="file" className={styles.label}>첨부파일</label>
+          <label htmlFor="file" className={styles.label}>
+            첨부파일
+          </label>
           <input
             type="file"
             id="file"
@@ -129,7 +128,7 @@ export default function CreatePostPage({ params }) {
         {error && <p className={styles.error}>{error}</p>}
         <button
           type="submit"
-          className={styles.button}
+          className={`${styles.button} ${loading ? styles.loading : ''}`}
           disabled={loading}
         >
           {loading ? '작성 중...' : '글쓰기'}
