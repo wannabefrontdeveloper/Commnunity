@@ -66,21 +66,22 @@ export default function PostDetailPage({ params }) {
           gallery_id: galleryId,
           user_id: parseInt(userId, 10), // user_id를 정수로 변환
         };
-  
+        const token = localStorage.getItem('token');
         console.log('삭제 요청 데이터:', requestBody);
   
         const response = await axios.delete('http://127.0.0.1:8000/api/regions/gallery/post', {
-          data: requestBody, // DELETE 요청 시 데이터는 `data`에 포함
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+            data: requestBody, // 요청 본문
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`, // 인증 토큰 추가
+            },
+          });
   
         console.log('서버 응답:', response.data);
   
         if (response.status === 200) {
-          alert(response.data.message || '게시글이 삭제되었습니다.');
-          window.location.href = `/gallery/${galleryId}`; // 삭제 후 갤러리 목록으로 이동
+          alert( '게시글이 삭제되었습니다.');
+          window.location.href = `/gallery/${galleryId}/post/${post.id}`; 
         }
       } catch (err) {
         if (err.response?.status === 403) {
