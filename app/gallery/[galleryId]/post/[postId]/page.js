@@ -167,7 +167,7 @@ export default function PostDetailPage({ params }) {
         if (err.response?.status === 403) {
           alert('글을 삭제할 권한이 없습니다.');
         } else if (err.response?.status === 404) {
-          alert('해당 게시글을 찾을 수 없습니다.');
+          alert('글을 쓴 본인만 삭제할 수 있습니다.');
         } else {
           alert('게시글 삭제 중 오류가 발생했습니다.');
         }
