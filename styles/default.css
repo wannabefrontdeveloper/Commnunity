@@ -111,29 +111,6 @@
     margin: 0 20px;
 }
   
-.search-bar input {
-    padding: 9px 10px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    width: 230px;
-}
-  
-.search-bar button {
-    padding: 12px 20px;
-    background-color: var(--main-color);
-    color: var(--font-white);
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
-}
-  
-.search-bar button:hover {
-    background-color: var(--main-hover);
-}
-  
   
 /* 2. main */
 .content {
@@ -171,5 +148,5 @@ footer p {
     padding-top: 80px;
 }
 .default-section{
-    padding: 5vh 0;
+    padding: 10vh 0;
 }

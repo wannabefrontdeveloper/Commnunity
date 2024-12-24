@@ -1,35 +1,63 @@
 
+.gallery-title-wrap{
+  display: flex;
+  justify-content: space-between;
+}
+
+.search-bar input {
+  padding: 9px 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  max-width: 320px;
+}
+
+.search-bar button {
+  padding: 12px 20px;
+  background-color: var(--main-color);
+  color: var(--font-white);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.search-bar button:hover {
+  background-color: var(--main-hover);
+}
+
 /* 갤러리 그리드 */
 .region-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
-  padding: 10px;
+  padding: 40px 10px;
   justify-items: center;
 }
 
 /* 갤러리 카드 */
-.region-card {
+.region-grid a{
   background-color: #ffffff;
   border: 1px solid #ddd;
   border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   padding: 20px;
   text-align: center;
   transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1),
               box-shadow 0.3s ease,
               background-color 0.3s ease;
   cursor: pointer;
-  width: 125px;
+  width: 100%;
 }
 
-.region-card:hover {
-  transform: translateY(-8px) scale(1.05);
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
-  background-color: #f9f9f9;
+.region-grid a:hover {
+  transform: translateY(-2px) scale(1.01);
+  /* box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3); */
+  /* background-color: #f9f9f9; */
 }
 
-.region-card:active {
+.region-grid a:active {
   transform: translateY(0) scale(0.95);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.1s cubic-bezier(0.25, 1, 0.5, 1);

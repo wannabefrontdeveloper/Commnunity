@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Link from 'next/link';
+import SearchBox from '@/components/SearchBox';
 
 export default async function HomePage() {
   let regions = [];
@@ -14,12 +15,15 @@ export default async function HomePage() {
   return (
     <section className='default-section gallery-section'>
         <header className="gallery-title-wrap">
-            <h1>
-                온캠퍼 캠핑 커뮤니티에 오신 걸 환영합니다.
-            </h1>
-            <p>
-                관심 있는 캠핑 지역을 선택해주세요!
-            </p>
+            <div className='gallery-title'>
+                <h1>
+                    온캠퍼 캠핑 커뮤니티에 오신 걸 환영합니다.
+                </h1>
+                <p>
+                    관심 있는 캠핑 지역을 선택해주세요!
+                </p>
+            </div>
+            <SearchBox/>
         </header>
         <article className="region-grid">
             {regions.map((region) => (

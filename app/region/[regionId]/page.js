@@ -1,6 +1,7 @@
 import axios from 'axios';
 import CreateGalleryButton from './CreateGalleryButton';
 import Link from 'next/link';
+import SearchBox from '@/components/SearchBox';
 
 export default async function GalleryPage({ params }) {
   const { regionId } = params;
@@ -31,38 +32,43 @@ export default async function GalleryPage({ params }) {
     console.error('Failed to fetch regions:', error);
   }
   return (
-    <div style={{ padding: '20px' }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>
-        {regionName} {'갤러리 목록'}
-      </h1>
-      <p style={{ textAlign: 'center' }}>
-        관심있는 갤러리를 선택해주세요!
-      </p>
-      <div style={{ textAlign: 'center', margin: '20px 0' }}>
-        <CreateGalleryButton regionId={regionId} regionName={regionName} />
-      </div>
-      <div className="gallery-list">
-        {galleryData?.error ? (
-          <p style={{ color: 'red', textAlign: 'center' }}>{galleryData.error}</p>
-        ) : (
-          <ul>
-            {galleryData?.map((gallery) => (
-              <Link
-                href={`/gallery/${gallery.id}?galleryName=${encodeURIComponent(gallery.name)}&regionId=${regionId}`}
-                style={{ textDecoration: "none" }}
-                key={gallery.id}
-              >
-                <li className="gallery-item">
-                  <div>
-                    <h3>{gallery.name}</h3>
-                    <p>{gallery.description}</p>
-                  </div>
-                </li>
-              </Link>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
+    <section className='default-section gallery-section'>
+        <header className="gallery-title-wrap" >
+            <div className='gallery-title'>
+                <h1>
+                    {regionName} {'갤러리 목록'}
+                </h1>
+                <p style={{ textAlign: 'center' }}>
+                    관심있는 갤러리를 선택해주세요!
+                </p>
+            </div>
+            <SearchBox/>
+        </header>
+        <div style={{ textAlign: 'right', margin: '20px 0' }}>
+                <CreateGalleryButton regionId={regionId} regionName={regionName} />
+        </div>
+        <div className="gallery-list">
+            {galleryData?.error ? (
+            <p style={{ color: 'red', textAlign: 'center' }}>{galleryData.error}</p>
+            ) : (
+                <ul>
+                    {galleryData?.map((gallery) => (
+                    <Link
+                        href={`/gallery/${gallery.id}?galleryName=${encodeURIComponent(gallery.name)}&regionId=${regionId}`}
+                        style={{ textDecoration: "none" }}
+                        key={gallery.id}
+                    >
+                        <li className="gallery-item">
+                        <div>
+                            <h3>{gallery.name}</h3>
+                            <p>{gallery.description}</p>
+                        </div>
+                        </li>
+                    </Link>
+                    ))}
+                </ul>
+            )}
+        </div>
+    </section>
   );
 }
