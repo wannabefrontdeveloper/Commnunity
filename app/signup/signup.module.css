@@ -1,51 +1,97 @@
 .signupBox {
-    max-width: 400px;
-    margin: 50px auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 84vh;
+    background-color: rgb(249 250 251 );
+}
+  
+.signupHeading {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--font-color);
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.signupForm {
+    width: 100%;
+    max-width: 500px;
+    background: var(--font-white);
+    padding: 2.5rem 3rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.signupForm:hover {
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.08);
+}
+  
+.formLabel {
+    display: block;
+    font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 0.75rem;
+    color: var(--font-gray);
+}
+  
+.inputField {
+    width: 100%;
+    padding: 0.75rem;
+    margin: 6px 0 1.25rem;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
+    font-size: 1rem;
+    transition: border 0.3s ease-in-out;
+}
   
-  .signupHeading {
-    text-align: center;
-    font-size: 24px;
-    margin-bottom: 20px;
-  }
+.inputField:focus {
+    outline: none;
+    border-color: var(--main-color);
+}
   
-  .signupForm {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .formLabel {
-    font-size: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
-  
-  .inputField {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-  
-  .submitButton {
-    padding: 10px;
-    background-color: #34c759;
-    color: white;
+.submitButton {
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--main-color);
+    color: var(--font-white);
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
+    font-size: 1.125rem;
+    font-weight: 600;
     cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.2s ease-in-out;
+    transition: background-color 0.3s, transform 0.2s;
   }
-  
   .submitButton:hover {
-    background-color: #28a745;
+    background-color: var(--main-hover);
   }
   
+  .submitButton:active {
+    background-color: var(--main-color);
+  }
+  
+  
+  .signUpButton {
+    width: 100%;
+    margin-top: 1.25rem;
+    padding: 1rem;
+    background-color: var(--signup-color);
+    color: var(--font-white);
+    border: none;
+    border-radius: 8px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+  }
+  
+  .signUpButton:hover {
+    background-color: var(--signup-color);
+  }
+  
+  .signUpButton:active {
+    background-color: var(--signup-hover);
+  }

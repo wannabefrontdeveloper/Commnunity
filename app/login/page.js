@@ -60,42 +60,42 @@ export default function LoginPage() {
   };
 
   return (
-    <div className={styles.loginBox}>
-      <form onSubmit={handleSubmit} className={styles.loginForm}>
-        <h1 className={styles.loginHeading}>로그인</h1>
-        <label className={styles.formLabel}>
-          이메일
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className={styles.inputField}
-          />
-        </label>
-        <label className={styles.formLabel}>
-          비밀번호
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            className={styles.inputField}
-          />
-        </label>
-        <button type="submit" className={styles.submitButton}>
-          로그인
-        </button>
-        <button
-          type="button"
-          onClick={handleSignUp}
-          className={`${styles.submitButton} ${styles.signUpButton}`}
-        >
-          회원가입
-        </button>
-      </form>
-    </div>
+    <section className={styles.loginBox}>
+        <form onSubmit={handleSubmit} className={styles.loginForm}>
+            <h1 className={styles.loginHeading}>로그인</h1>
+            <label className={styles.formLabel}>
+            이메일
+            <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className={styles.inputField}
+            />
+            </label>
+            <label className={styles.formLabel}>
+            비밀번호
+            <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className={styles.inputField}
+            />
+            </label>
+            <button type="submit" className={styles.submitButton}>
+            로그인
+            </button>
+            <button
+            type="button"
+            onClick={handleSignUp}
+            className={`${styles.submitButton} ${styles.signUpButton}`}
+            >
+            회원가입
+            </button>
+        </form>
+    </section>
   );
 }

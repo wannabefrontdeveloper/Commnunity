@@ -4,6 +4,7 @@
     --foreground: #171717;
     --font-color: #333333;
     --font-white: #ffffff;
+    --font-gray: #9c9c9c;
     --border-color: #eee;
     --main-color: #384B70;
     --main-hover:#55679C;
@@ -66,6 +67,7 @@
     2. main
     3. footer
     4. default container
+    5. input
 
 -------------------*/
 
