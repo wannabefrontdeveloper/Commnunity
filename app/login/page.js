@@ -24,21 +24,21 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log('전송하는 데이터:', formData);
-  
+
     try {
       const response = await axios.post('http://127.0.0.1:8000/api/login', formData);
-  
+
       console.log('전체 서버 응답 데이터:', response.data);
-  
+
       if (response.status === 200) {
         const { access_token: token, user_name, user_id } = response.data;
-  
+
         localStorage.setItem('token', token);
         localStorage.setItem('user_name', user_name);
         localStorage.setItem('user_id', user_id);
-        
+
         alert(`로그인 성공! 환영합니다, ${user_name}님`);
-  
+
         window.location.href = `/`;
         setTimeout(() => {
           window.location.href = '/';
@@ -54,17 +54,17 @@ export default function LoginPage() {
       }
     }
   };
-  
+
   const handleSignUp = () => {
     router.push('/signup');
   };
 
   return (
     <div className={styles.loginBox}>
-      <h1 className={styles.loginHeading}>로그인</h1>
       <form onSubmit={handleSubmit} className={styles.loginForm}>
+        <h1 className={styles.loginHeading}>로그인</h1>
         <label className={styles.formLabel}>
-          이메일:
+          이메일
           <input
             type="email"
             name="email"
@@ -75,7 +75,7 @@ export default function LoginPage() {
           />
         </label>
         <label className={styles.formLabel}>
-          비밀번호:
+          비밀번호
           <input
             type="password"
             name="password"

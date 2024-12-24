@@ -112,5 +112,5 @@
 }
 
 .register-button:hover {
-  background-color: #3C715B;
+  background-color: var(--main-hover);
 }
