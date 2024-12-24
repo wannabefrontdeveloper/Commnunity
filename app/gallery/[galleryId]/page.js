@@ -41,6 +41,7 @@ export default function GalleryDetailPage({ params }) {
             params: { gallery_id: galleryId, page: 1 },
           });
           setPosts(response.data.data);
+          console.log('서버에서 받는 데이터: ', response.data.data);
         } catch (err) {
           setError('게시글이 존재하지 않습니다.');
         } finally {
@@ -106,18 +107,20 @@ export default function GalleryDetailPage({ params }) {
       ) : posts.length === 0 ? (
         <p className={styles.noPosts}>게시글이 없습니다.</p>
       ) : (
-        <div className={styles.postList}>
-          <ul>
-            {posts.map((post) => (
-              <li key={post.id} className={styles.postItem}>
+      <div className={styles.postList}>
+        <ul>
+          {posts.map((post) => (
+            <li key={post.id} className={styles.postItem}>
+              <Link href={`/gallery/${galleryId}/post/${post.id}`} className={styles.postLink}>
                 <h3>{post.title}</h3>
                 <p>
                   작성자: {post.user_name} | 작성일: {post.created_at}
                 </p>
-              </li>
-            ))}
-          </ul>
-        </div>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
       )}
 
       <div className={styles.linkContainer}>
