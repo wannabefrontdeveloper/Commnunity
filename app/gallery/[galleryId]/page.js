@@ -92,6 +92,14 @@ export default function GalleryDetailPage({ params }) {
     }
   };
 
+  const handleWritePost = () => {
+    if (!isLoggedIn) {
+      alert('로그인 후 이용해 주세요.');
+      return;
+    }
+    router.push(`/gallery/${galleryId}/create`);
+  };
+
   if (!galleryId) {
     return <p className={styles.loading}>갤러리 정보를 불러오는 중...</p>;
   }
@@ -127,9 +135,9 @@ export default function GalleryDetailPage({ params }) {
         <Link href="/" className={styles.link}>
           메인으로 돌아가기
         </Link>
-        <Link href={`/gallery/${galleryId}/create`} className={styles.button}>
+        <button onClick={handleWritePost} className={styles.button}>
           글쓰기
-        </Link>
+        </button>
         {isLoggedIn && (
           <button onClick={handleDeleteGallery} className={styles.deleteButton}>
             갤러리 삭제하기
