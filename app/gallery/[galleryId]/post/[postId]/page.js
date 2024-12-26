@@ -94,13 +94,11 @@ export default function PostDetailPage({ params }) {
       }
   
       const requestData = {
-        gallery_id: galleryId,
         post_id: postId,
         user_id: parseInt(userId, 10),
         user_name: userName,
         content: comment,
         password: password,
-        parent_comment_id: 0,
       };
   
       console.log('서버로 보내는 데이터:', requestData);
