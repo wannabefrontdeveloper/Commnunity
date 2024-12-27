@@ -94,6 +94,7 @@ export default function PostDetailPage({ params }) {
       }
   
       const requestData = {
+        gallery_id: galleryId,
         post_id: postId,
         user_id: parseInt(userId, 10),
         user_name: userName,
