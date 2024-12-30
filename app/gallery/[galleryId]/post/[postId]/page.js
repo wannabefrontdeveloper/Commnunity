@@ -210,7 +210,7 @@ export default function PostDetailPage({ params }) {
             comments.map((comment, index) => (
               <li key={index} className={styles.comment}>
                 <p>
-                  {comment.username}: <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(comment.content) }} />
+                  {comment.username} <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(comment.content) }} />
                 </p>
               </li>
             ))

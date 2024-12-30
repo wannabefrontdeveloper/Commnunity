@@ -110,7 +110,7 @@ export default function CreatePostPage({ params }) {
                         placeholder="내용을 입력하세요"
                     />
                 </div>
-                <div>
+                {/* <div>
                     <label htmlFor="file" className={styles.label}>
                         첨부파일
                     </label>
@@ -120,7 +120,7 @@ export default function CreatePostPage({ params }) {
                         onChange={(e) => setFile(e.target.files[0])}
                         className={styles.fileInput}
                     />
-                </div>
+                </div> */}
                 {error && <p className={styles.error}>{error}</p>}
                 <button
                 type="submit"
