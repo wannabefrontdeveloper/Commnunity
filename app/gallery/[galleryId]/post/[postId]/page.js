@@ -89,11 +89,6 @@ export default function PostDetailPage({ params }) {
       const userName = localStorage.getItem('user_name');
       const token = localStorage.getItem('token');
 
-      if (!token) {
-        alert('로그인이 필요합니다.');
-        return;
-      }
-
       const requestData = {
         gallery_id: galleryId,
         post_id: postId,
