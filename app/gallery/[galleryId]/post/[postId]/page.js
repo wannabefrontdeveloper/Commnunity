@@ -51,19 +51,23 @@ export default function PostDetailPage({ params }) {
           const response = await axios.get('http://127.0.0.1:8000/api/regions/gallery/post/comments', {
             params: { post_id: postId },
           });
-      
-          console.log('댓글 데이터:', response.data);
-      
-          if (response.data.comment_status === "0") {
-            setComments([]);
+    
+          console.log('댓글 목록 조회:', response.data);
+          if (Array.isArray(response.data)) {
+            setComments(response.data);
           } else {
-            setComments(response.data.comments);
+            console.warn('Unexpected comments format:', response.data);
+            setComments([]);
           }
         } catch (err) {
           console.error('댓글 불러오기 오류:', err);
-          setComments([]);
+          setComments([]); 
         }
       };
+    
+      if (postId) {
+        fetchComments();
+      }
 
       fetchPostDetail();
       fetchComments();
@@ -218,7 +222,7 @@ export default function PostDetailPage({ params }) {
       comments.map((comment, index) => (
         <li key={index} className={styles.comment}>
           <p>
-            <strong>{comment.user_name}</strong>: {comment.content}
+            {comment.username}: {comment.content}
           </p>
         </li>
       ))
