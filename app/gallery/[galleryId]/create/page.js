@@ -17,7 +17,7 @@ export default function CreatePostPage({ params }) {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const [token, setToken] = useState('');
-    const [userName, setUserName] = useState('알 수 없음');
+    const [userName, setUserName] = useState('');
     const [userId, setUserId] = useState(0);
 
     useEffect(() => {
@@ -27,7 +27,7 @@ export default function CreatePostPage({ params }) {
             const storedUserId = localStorage.getItem('user_id');
 
             setToken(storedToken || '');
-            setUserName(storedUserName || '알 수 없음');
+            setUserName(storedUserName || '');
             setUserId(Number(storedUserId) || 0);
         }
     }, []);
