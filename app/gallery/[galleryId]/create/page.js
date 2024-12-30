@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import 'react-quill/dist/quill.snow.css';
@@ -16,58 +16,128 @@ export default function CreatePostPage({ params }) {
     const [content, setContent] = useState('');
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [file, setFile] = useState(null);
     const [token, setToken] = useState('');
     const [userName, setUserName] = useState('알 수 없음');
     const [userId, setUserId] = useState(0);
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
-        const storedToken = localStorage.getItem('token');
-        const storedUserName = localStorage.getItem('user_name');
-        const storedUserId = localStorage.getItem('user_id');
+            const storedToken = localStorage.getItem('token');
+            const storedUserName = localStorage.getItem('user_name');
+            const storedUserId = localStorage.getItem('user_id');
 
-        setToken(storedToken || '');
-        setUserName(storedUserName || '알 수 없음');
-        setUserId(Number(storedUserId) || 0);
+            setToken(storedToken || '');
+            setUserName(storedUserName || '알 수 없음');
+            setUserId(Number(storedUserId) || 0);
         }
     }, []);
 
+    const handleImageUpload = async () => {
+        return new Promise((resolve, reject) => {
+            const input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+            input.click();
+    
+            input.onchange = async () => {
+                const file = input.files[0];
+                const formData = new FormData();
+                formData.append('image', file);
+    
+                console.log('서버로 보내는 데이터:');
+                formData.forEach((value, key) => {
+                    console.log(`${key}:`, value);
+                });
+    
+                try {
+                    const res = await axios.post(
+                        'http://127.0.0.1:8000/api/regions/gallery/postImage',
+                        formData,
+                        {
+                            headers: {
+                                'Content-Type': 'multipart/form-data',
+                                Authorization: `Bearer ${token}`,
+                            },
+                        }
+                    );
+    
+                    console.log('서버에서 반환된 데이터:', res.data);
+    
+                    const imageUrl = res.data.url;
+                    resolve(imageUrl);
+                } catch (err) {
+                    console.error('이미지 업로드 실패:', err);
+                    console.error('에러 응답 데이터:', err.response?.data);
+                    reject(err);
+                }
+            };
+        });
+    };
+
+    const modules = useMemo(() => ({
+        toolbar: {
+            container: [
+                [{ header: [1, 2, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                ['link', 'image'],
+            ],
+            handlers: {
+                image: async function () {
+                    const quill = this.quill;
+                    let range = quill.getSelection();
+            
+                    if (!range) {
+                        quill.setSelection(quill.getLength());
+                        range = quill.getSelection();
+                    }
+            
+                    try {
+                        const imageUrl = await handleImageUpload();
+                        console.log('삽입된 이미지 URL:', imageUrl);
+            
+                        quill.insertEmbed(range.index, 'image', imageUrl);
+                    } catch (error) {
+                        console.error('이미지 삽입 실패:', error);
+                    }
+                },
+            },
+        },
+    }), [token]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
-        try {
-        setLoading(true);
-    
 
-        const data = {
-            gallery_id: galleryId,
-            user_id: userId,
-            user_name: userName,
-            title: title,
-            content: content,
-        };
-    
-        console.log('Request Data:', data);
-        const response = await axios.post(
-            'http://127.0.0.1:8000/api/regions/gallery/post',
-            data,
-            {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-            },
-            }
-        );
-    
-        alert(response.data.message || '게시글이 성공적으로 작성되었습니다.');
-        router.push(`/gallery/${galleryId}`);
+        try {
+            setLoading(true);
+
+            const data = {
+                gallery_id: galleryId,
+                user_id: userId,
+                user_name: userName,
+                title: title,
+                content: content,
+            };
+
+            const response = await axios.post(
+                'http://127.0.0.1:8000/api/regions/gallery/post',
+                data,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            alert(response.data.message || '게시글이 성공적으로 작성되었습니다.');
+            router.push(`/gallery/${galleryId}`);
         } catch (err) {
-        const errorMessage =
-            err.response?.data?.error || '게시글 작성 중 문제가 발생했습니다.';
-        setError(errorMessage);
+            const errorMessage =
+                err.response?.data?.error || '게시글 작성 중 문제가 발생했습니다.';
+            setError(errorMessage);
         } finally {
-        setLoading(false);
+            setLoading(false);
         }
     };
 
@@ -108,26 +178,16 @@ export default function CreatePostPage({ params }) {
                         value={content}
                         onChange={setContent}
                         placeholder="내용을 입력하세요"
+                        modules={modules}
                     />
                 </div>
-                {/* <div>
-                    <label htmlFor="file" className={styles.label}>
-                        첨부파일
-                    </label>
-                    <input
-                        type="file"
-                        id="file"
-                        onChange={(e) => setFile(e.target.files[0])}
-                        className={styles.fileInput}
-                    />
-                </div> */}
                 {error && <p className={styles.error}>{error}</p>}
                 <button
-                type="submit"
-                className={`${styles.button} ${loading ? styles.loading : ''}`}
-                disabled={loading}
+                    type="submit"
+                    className={`${styles.button} ${loading ? styles.loading : ''}`}
+                    disabled={loading}
                 >
-                {loading ? '작성 중...' : '글쓰기'}
+                    {loading ? '작성 중...' : '글쓰기'}
                 </button>
             </form>
         </section>
