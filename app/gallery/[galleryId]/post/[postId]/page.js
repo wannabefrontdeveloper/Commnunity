@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import styles from './page.module.css';
+import DOMPurify from 'dompurify';
 
 export default function PostDetailPage({ params }) {
   const [galleryId, setGalleryId] = useState(null);
@@ -209,7 +210,7 @@ export default function PostDetailPage({ params }) {
             comments.map((comment, index) => (
               <li key={index} className={styles.comment}>
                 <p>
-                  {comment.username}: {comment.content}
+                  {comment.username}: <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(comment.content) }} />
                 </p>
               </li>
             ))
