@@ -16,46 +16,6 @@ export default function PostDetailPage({ params }) {
   const [userName, setUserName] = useState(null);
   const [password, setPassword] = useState("");
 
-  useEffect(() => {
-    const resolveParams = async () => {
-      const resolvedParams = await params;
-      setGalleryId(resolvedParams.galleryId);
-      setPostId(resolvedParams.postId);
-    };
-
-    resolveParams();
-    setUserName(localStorage.getItem("user_name"));
-  }, [params]);
-
-  useEffect(() => {
-    if (galleryId && postId) {
-      fetchPostDetail();
-      fetchComments();
-    }
-  }, [galleryId, postId, fetchPostDetail, fetchComments]);
-
-  const fetchComments = useCallback(async () => {
-    try {
-      const response = await axios.get(
-        "http://127.0.0.1:8000/api/regions/gallery/post/comments",
-        {
-          params: { post_id: postId },
-        }
-      );
-
-      console.log("댓글 목록 조회:", response.data);
-      if (Array.isArray(response.data)) {
-        setComments(response.data);
-      } else {
-        console.warn("Unexpected comments format:", response.data);
-        setComments([]);
-      }
-    } catch (err) {
-      console.error("댓글 불러오기 오류:", err);
-      setComments([]);
-    }
-  }, [postId]);
-
   const fetchPostDetail = useCallback(async () => {
     try {
       const response = await axios.get(
@@ -79,6 +39,46 @@ export default function PostDetailPage({ params }) {
       setLoading(false);
     }
   }, [galleryId, postId]);
+
+  const fetchComments = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        "http://127.0.0.1:8000/api/regions/gallery/post/comments",
+        {
+          params: { post_id: postId },
+        }
+      );
+
+      console.log("댓글 목록 조회:", response.data);
+      if (Array.isArray(response.data)) {
+        setComments(response.data);
+      } else {
+        console.warn("Unexpected comments format:", response.data);
+        setComments([]);
+      }
+    } catch (err) {
+      console.error("댓글 불러오기 오류:", err);
+      setComments([]);
+    }
+  }, [postId]);
+
+  useEffect(() => {
+    const resolveParams = async () => {
+      const resolvedParams = await params;
+      setGalleryId(resolvedParams.galleryId);
+      setPostId(resolvedParams.postId);
+    };
+
+    resolveParams();
+    setUserName(localStorage.getItem("user_name"));
+  }, [params]);
+
+  useEffect(() => {
+    if (galleryId && postId) {
+      fetchPostDetail();
+      fetchComments();
+    }
+  }, [galleryId, postId, fetchPostDetail, fetchComments]);
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
