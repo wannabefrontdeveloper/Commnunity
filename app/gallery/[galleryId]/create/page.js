@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import "react-quill/dist/quill.snow.css";
@@ -20,6 +20,7 @@ export default function CreatePostPage({ params }) {
   const [userName, setUserName] = useState("");
   const [userId, setUserId] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const quillRef = useRef(null);
 
   useEffect(() => {
     setMounted(true);
@@ -194,10 +195,77 @@ export default function CreatePostPage({ params }) {
     }
   };
 
+  // 드래그 앤 드롭 핸들러
+  const handleEditorDrop = useCallback(async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    console.log("드롭 이벤트 감지!");
+    
+    const files = e.dataTransfer?.files;
+    if (!files?.length) return;
+
+    const file = files[0];
+    if (!file.type.startsWith('image/')) return;
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const response = await axios.post(
+        'http://127.0.0.1:8000/api/regions/gallery/postImage',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const uploadedUrl = response.data.url;
+      
+      // ref를 통해 Quill 인스턴스에 접근
+      const quill = quillRef.current?.getEditor();
+      if (!quill) {
+        console.error('Quill 인스턴스를 찾을 수 없습니다.');
+        return;
+      }
+
+      const range = quill.getSelection() || { index: quill.getLength() };
+      quill.insertEmbed(range.index, 'image', uploadedUrl);
+    } catch (error) {
+      console.error('이미지 업로드 실패:', error);
+    }
+  }, [token]);
+
+  // 드래그 오버 핸들러
+  const handleDragOver = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("드래그 오버!");
+  }, []);
+
+  // 에디터 마운트 시 이벤트 리스너 등록
+  useEffect(() => {
+    if (mounted) {
+      const editorElement = document.querySelector('.ql-editor');
+      if (editorElement) {
+        editorElement.addEventListener('drop', handleEditorDrop);
+        editorElement.addEventListener('dragover', handleDragOver);
+
+        return () => {
+          editorElement.removeEventListener('drop', handleEditorDrop);
+          editorElement.removeEventListener('dragover', handleDragOver);
+        };
+      }
+    }
+  }, [mounted, handleEditorDrop, handleDragOver]);
+
   return (
     <section className={styles.container}>
       <form onSubmit={handleSubmit} className={styles.form}>
-        <h1 className={styles.title}>갤러리 {galleryId} 글쓰기</h1>
+        <h1 className={styles.title}> 글쓰기</h1>
         <div>
           <label htmlFor="userName" className={styles.label}>
             작성자
@@ -223,16 +291,27 @@ export default function CreatePostPage({ params }) {
             placeholder="제목을 입력하세요"
           />
         </div>
-        <div className={styles.quillContainer}>
+        <div 
+          className={styles.quillContainer}
+          onDragOver={handleDragOver}
+          onDrop={handleEditorDrop}
+        >
           <label htmlFor="content" className={styles.label}>
             내용
           </label>
           {mounted && (
             <ReactQuill
+              ref={quillRef}
               value={content}
               onChange={setContent}
               placeholder="내용을 입력하세요"
               modules={modules}
+              onFocus={() => {
+                const editor = document.querySelector('.ql-editor');
+                if (editor) {
+                  editor.setAttribute('data-placeholder', '');
+                }
+              }}
             />
           )}
         </div>
