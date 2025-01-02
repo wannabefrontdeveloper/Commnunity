@@ -15,6 +15,8 @@ export default function PostDetailPage({ params }) {
   const [comments, setComments] = useState([]);
   const [userName, setUserName] = useState(null);
   const [password, setPassword] = useState("");
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editingCommentContent, setEditingCommentContent] = useState("");
 
   const fetchPostDetail = useCallback(async () => {
     try {
@@ -118,10 +120,8 @@ export default function PostDetailPage({ params }) {
         }
       );
 
-      // 댓글 작성 성공 후 fetchComments 호출
       fetchComments();
 
-      // 입력 필드 초기화
       setComment("");
       setPassword("");
     } catch (err) {
@@ -136,7 +136,6 @@ export default function PostDetailPage({ params }) {
   };
 
   const handleDelete = async () => {
-    // 현재 로그인한 사용자와 게시글 작성자 비교
     const currentUserName = localStorage.getItem("user_name");
     
     if (!currentUserName) {
@@ -187,6 +186,94 @@ export default function PostDetailPage({ params }) {
     window.location.href = `/gallery/${galleryId}/post/${postId}/edit`;
   };
 
+  const handleDeleteComment = async (commentId, commentUsername) => {
+    const currentUserName = localStorage.getItem("user_name");
+    
+    if (!currentUserName) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
+    if (currentUserName !== commentUsername) {
+      alert("본인이 작성한 댓글만 삭제할 수 있습니다.");
+      return;
+    }
+
+    if (confirm("정말로 이 댓글을 삭제하시겠습니까?")) {
+      try {
+        const token = localStorage.getItem("token");
+        const userId = localStorage.getItem("user_id");
+
+        await axios.delete(
+          "http://127.0.0.1:8000/api/regions/gallery/post/comments",
+          {
+            data: {
+              comment_id: commentId,
+              user_id: parseInt(userId, 10),
+            },
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        alert("댓글이 삭제되었습니다.");
+        fetchComments(); // 댓글 목록 새로고침
+      } catch (err) {
+        alert("댓글 삭제 중 오류가 발생했습니다.");
+      }
+    }
+  };
+
+  const handleEditComment = async (commentId, currentContent, commentUsername) => {
+    const currentUserName = localStorage.getItem("user_name");
+    
+    if (!currentUserName) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+  
+    if (currentUserName !== commentUsername) {
+      alert("본인이 작성한 댓글만 수정할 수 있습니다.");
+      return;
+    }
+  
+    // HTML 태그 제거하고 순수 텍스트만 추출
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = currentContent;
+    const plainText = tempDiv.textContent || tempDiv.innerText;
+  
+    setEditingCommentId(commentId);
+    setEditingCommentContent(plainText);
+  };
+
+  const handleSubmitCommentEdit = async (commentId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("user_id");
+
+      await axios.put(
+        "http://127.0.0.1:8000/api/regions/gallery/post/comments",
+        {
+          comment_id: commentId,
+          user_id: parseInt(userId, 10),
+          content: editingCommentContent,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setEditingCommentId(null);
+      setEditingCommentContent("");
+      fetchComments(); // 댓글 목록 새로고침
+    } catch (err) {
+      alert("댓글 수정 중 오류가 발생했습니다.");
+    }
+  };
+
   if (loading) {
     return <p className={styles.loading}>로딩 중...</p>;
   }
@@ -227,14 +314,59 @@ export default function PostDetailPage({ params }) {
           ) : (
             comments.map((comment, index) => (
               <li key={index} className={styles.comment}>
-                <p>
-                  {comment.username}{" "}
-                  <span
+                <div className={styles.commentHeader}>
+                  <span className={styles.commentAuthor}>{comment.username}</span>
+                  <div className={styles.commentActions}>
+                    {localStorage.getItem("user_name") === comment.username && (
+                      <>
+                        <button
+                          onClick={() => handleEditComment(comment.id, comment.content, comment.username)}
+                          className={styles.commentEditButton}
+                        >
+                          수정
+                        </button>
+                        <button
+                          onClick={() => handleDeleteComment(comment.id, comment.username)}
+                          className={styles.commentDeleteButton}
+                        >
+                          삭제
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+                {editingCommentId === comment.id ? (
+                  <div className={styles.editCommentForm}>
+                    <textarea
+                      value={editingCommentContent}
+                      onChange={(e) => setEditingCommentContent(e.target.value)}
+                      className={styles.editCommentInput}
+                    />
+                    <div className={styles.editCommentButtons}>
+                      <button
+                        onClick={() => handleSubmitCommentEdit(comment.id)}
+                        className={styles.saveButton}
+                      >
+                        저장
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditingCommentId(null);
+                          setEditingCommentContent("");
+                        }}
+                        className={styles.cancelButton}
+                      >
+                        취소
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p
                     dangerouslySetInnerHTML={{
                       __html: DOMPurify.sanitize(comment.content),
                     }}
                   />
-                </p>
+                )}
               </li>
             ))
           )}

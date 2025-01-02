@@ -147,3 +147,74 @@
     font-size: 14px;
   }
   
+.commentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.commentAuthor {
+  font-weight: bold;
+}
+
+.commentActions {
+  display: flex;
+  gap: 8px;
+}
+
+.commentEditButton,
+.commentDeleteButton {
+  padding: 4px 8px;
+  font-size: 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.commentEditButton {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.commentDeleteButton {
+  background-color: #f44336;
+  color: white;
+}
+
+.editCommentForm {
+  margin-top: 8px;
+}
+
+.editCommentInput {
+  width: 100%;
+  min-height: 60px;
+  padding: 8px;
+  margin-bottom: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  resize: vertical;
+}
+
+.editCommentButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.saveButton,
+.cancelButton {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.saveButton {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.cancelButton {
+  background-color: #f44336;
+  color: white;
+}
