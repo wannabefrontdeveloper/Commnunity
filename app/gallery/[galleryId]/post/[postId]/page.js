@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import styles from './page.module.css';
-import DOMPurify from 'dompurify';
+import React, { useEffect, useState, useCallback } from "react";
+import axios from "axios";
+import styles from "./page.module.css";
+import DOMPurify from "dompurify";
 
 export default function PostDetailPage({ params }) {
   const [galleryId, setGalleryId] = useState(null);
@@ -11,10 +11,10 @@ export default function PostDetailPage({ params }) {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [comment, setComment] = useState('');
+  const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [userName, setUserName] = useState(null);
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState("");
 
   useEffect(() => {
     const resolveParams = async () => {
@@ -24,7 +24,7 @@ export default function PostDetailPage({ params }) {
     };
 
     resolveParams();
-    setUserName(localStorage.getItem('user_name'));
+    setUserName(localStorage.getItem("user_name"));
   }, [params]);
 
   useEffect(() => {
@@ -32,63 +32,71 @@ export default function PostDetailPage({ params }) {
       fetchPostDetail();
       fetchComments();
     }
-  }, [galleryId, postId]);
+  }, [galleryId, postId, fetchPostDetail, fetchComments]);
 
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/regions/gallery/post/comments', {
-        params: { post_id: postId },
-      });
+      const response = await axios.get(
+        "http://127.0.0.1:8000/api/regions/gallery/post/comments",
+        {
+          params: { post_id: postId },
+        }
+      );
 
-      console.log('댓글 목록 조회:', response.data);
+      console.log("댓글 목록 조회:", response.data);
       if (Array.isArray(response.data)) {
         setComments(response.data);
       } else {
-        console.warn('Unexpected comments format:', response.data);
+        console.warn("Unexpected comments format:", response.data);
         setComments([]);
       }
     } catch (err) {
-      console.error('댓글 불러오기 오류:', err);
+      console.error("댓글 불러오기 오류:", err);
       setComments([]);
     }
-  };
+  }, [postId]);
 
-  const fetchPostDetail = async () => {
+  const fetchPostDetail = useCallback(async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/regions/gallery/post', {
-        params: { gallery_id: galleryId, post_id: postId },
-      });
+      const response = await axios.get(
+        "http://127.0.0.1:8000/api/regions/gallery/post",
+        {
+          params: { gallery_id: galleryId, post_id: postId },
+        }
+      );
       setPost(response.data[0]);
     } catch (err) {
       if (err.response?.status === 422) {
-        setError('부적절한 접근입니다. gallery_id 또는 post_id가 누락되었습니다.');
+        setError(
+          "부적절한 접근입니다. gallery_id 또는 post_id가 누락되었습니다."
+        );
       } else if (err.response?.status === 500) {
-        setError('게시글이 존재하지 않습니다.');
+        setError("게시글이 존재하지 않습니다.");
       } else {
-        setError('게시글을 불러오는 중 오류가 발생했습니다.');
+        setError("게시글을 불러오는 중 오류가 발생했습니다.");
       }
     } finally {
       setLoading(false);
     }
-  };
+  }, [galleryId, postId]);
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
 
     if (!comment.trim()) {
-      alert('댓글을 입력해주세요.');
+      alert("댓글을 입력해주세요.");
       return;
     }
 
     if (!password.trim()) {
-      alert('비밀번호를 입력해주세요.');
+      alert("비밀번호를 입력해주세요.");
       return;
     }
 
     try {
-      const userId = localStorage.getItem('user_id');
-      const userName = localStorage.getItem('user_name');
-      const token = localStorage.getItem('token');
+      const userId = localStorage.getItem("user_id");
+      const userName = localStorage.getItem("user_name");
+      const token = localStorage.getItem("token");
 
       const requestData = {
         gallery_id: galleryId,
@@ -100,12 +108,12 @@ export default function PostDetailPage({ params }) {
       };
 
       await axios.post(
-        'http://127.0.0.1:8000/api/regions/gallery/post/comments',
+        "http://127.0.0.1:8000/api/regions/gallery/post/comments",
         requestData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
@@ -114,25 +122,25 @@ export default function PostDetailPage({ params }) {
       fetchComments();
 
       // 입력 필드 초기화
-      setComment('');
-      setPassword('');
+      setComment("");
+      setPassword("");
     } catch (err) {
-      console.error('댓글 작성 오류:', err);
+      console.error("댓글 작성 오류:", err);
 
       if (err.response?.status === 500) {
-        alert('서버에서 문제가 발생했습니다. 관리자에게 문의하세요.');
+        alert("서버에서 문제가 발생했습니다. 관리자에게 문의하세요.");
       } else {
-        alert('댓글 작성 중 오류가 발생했습니다.');
+        alert("댓글 작성 중 오류가 발생했습니다.");
       }
     }
   };
 
   const handleDelete = async () => {
-    if (confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
+    if (confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
       try {
-        const userId = localStorage.getItem('user_id');
+        const userId = localStorage.getItem("user_id");
         if (!userId) {
-          alert('로그인이 필요합니다.');
+          alert("로그인이 필요합니다.");
           return;
         }
 
@@ -140,27 +148,30 @@ export default function PostDetailPage({ params }) {
           gallery_id: galleryId,
           user_id: parseInt(userId, 10),
         };
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
 
-        const response = await axios.delete('http://127.0.0.1:8000/api/regions/gallery/post', {
-          data: requestBody,
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
+        const response = await axios.delete(
+          "http://127.0.0.1:8000/api/regions/gallery/post",
+          {
+            data: requestBody,
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         if (response.status === 200) {
-          alert('게시글이 삭제되었습니다.');
+          alert("게시글이 삭제되었습니다.");
           window.location.href = `/gallery/${galleryId}`;
         }
       } catch (err) {
         if (err.response?.status === 403) {
-          alert('글을 삭제할 권한이 없습니다.');
+          alert("글을 삭제할 권한이 없습니다.");
         } else if (err.response?.status === 404) {
-          alert('글을 쓴 본인만 삭제할 수 있습니다.');
+          alert("글을 쓴 본인만 삭제할 수 있습니다.");
         } else {
-          alert('게시글 삭제 중 오류가 발생했습니다.');
+          alert("게시글 삭제 중 오류가 발생했습니다.");
         }
       }
     }
@@ -186,7 +197,8 @@ export default function PostDetailPage({ params }) {
     <div className={styles.container}>
       <h1 className={styles.title}>{post.title}</h1>
       <p className={styles.author}>
-        작성자: {post.user_name} | 작성일: {new Date(post.created_at).toLocaleString()}
+        작성자: {post.user_name} | 작성일:{" "}
+        {new Date(post.created_at).toLocaleString()}
       </p>
       <p className={styles.views}>조회수: {post.views}</p>
       <div
@@ -210,7 +222,12 @@ export default function PostDetailPage({ params }) {
             comments.map((comment, index) => (
               <li key={index} className={styles.comment}>
                 <p>
-                  {comment.username} <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(comment.content) }} />
+                  {comment.username}{" "}
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(comment.content),
+                    }}
+                  />
                 </p>
               </li>
             ))
@@ -219,9 +236,9 @@ export default function PostDetailPage({ params }) {
         <form onSubmit={handleCommentSubmit} className={styles.commentForm}>
           <input
             type="text"
-            value={userName || ''}
+            value={userName || ""}
             readOnly
-            placeholder={userName || '작성자 이름'}
+            placeholder={userName || "작성자 이름"}
             className={styles.commentAuthor}
           />
           <textarea
