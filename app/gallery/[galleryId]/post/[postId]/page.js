@@ -136,14 +136,22 @@ export default function PostDetailPage({ params }) {
   };
 
   const handleDelete = async () => {
+    // 현재 로그인한 사용자와 게시글 작성자 비교
+    const currentUserName = localStorage.getItem("user_name");
+    
+    if (!currentUserName) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
+    if (currentUserName !== post.user_name) {
+      alert("본인이 작성한 게시글만 삭제할 수 있습니다.");
+      return;
+    }
+
     if (confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
       try {
         const userId = localStorage.getItem("user_id");
-        if (!userId) {
-          alert("로그인이 필요합니다.");
-          return;
-        }
-
         const requestBody = {
           gallery_id: galleryId,
           user_id: parseInt(userId, 10),
@@ -168,8 +176,6 @@ export default function PostDetailPage({ params }) {
       } catch (err) {
         if (err.response?.status === 403) {
           alert("글을 삭제할 권한이 없습니다.");
-        } else if (err.response?.status === 404) {
-          alert("글을 쓴 본인만 삭제할 수 있습니다.");
         } else {
           alert("게시글 삭제 중 오류가 발생했습니다.");
         }

@@ -48,13 +48,15 @@ export default function CreatePostPage({ params }) {
 
       input.onchange = async () => {
         const file = input.files[0];
+        
+        if (file.size > 2 * 1024 * 1024) { // 2MB 제한
+          alert('파일 크기는 2MB 이하여야 합니다.');
+          reject(new Error('File too large'));
+          return;
+        }
+
         const formData = new FormData();
         formData.append("image", file);
-
-        console.log("서버로 보내는 데이터:");
-        formData.forEach((value, key) => {
-          console.log(`${key}:`, value);
-        });
 
         try {
           const res = await axios.post(
@@ -65,16 +67,17 @@ export default function CreatePostPage({ params }) {
                 "Content-Type": "multipart/form-data",
                 Authorization: `Bearer ${token}`,
               },
+              timeout: 30000,
             }
           );
 
-          console.log("서버에서 반환된 데이터:", res.data);
+          if (!res.data?.url) {
+            throw new Error('이미지 URL을 받지 못했습니다.');
+          }
 
-          const imageUrl = res.data.url;
-          resolve(imageUrl);
+          resolve(res.data.url);
         } catch (err) {
           console.error("이미지 업로드 실패:", err);
-          console.error("에러 응답 데이터:", err.response?.data);
           reject(err);
         }
       };
