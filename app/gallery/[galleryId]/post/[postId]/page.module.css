@@ -265,3 +265,16 @@
   background-color: #6c757d;
   color: white;
 }
+
+.replyButton {
+  background-color: #f0f0f0;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.replyButton:hover {
+  background-color: #e0e0e0;
+}

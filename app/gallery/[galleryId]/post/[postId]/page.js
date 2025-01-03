@@ -18,6 +18,8 @@ export default function PostDetailPage({ params }) {
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingCommentContent, setEditingCommentContent] = useState("");
   const [editingPassword, setEditingPassword] = useState("");
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [replyContent, setReplyContent] = useState("");
 
   const fetchPostDetail = useCallback(async () => {
     try {
@@ -303,6 +305,55 @@ export default function PostDetailPage({ params }) {
     }
   };
 
+  const handleReplySubmit = async (e) => {
+    e.preventDefault();
+
+    if (!replyContent.trim()) {
+      alert("답글을 입력해주세요.");
+      return;
+    }
+
+    if (!password.trim()) {
+      alert("비밀번호를 입력해주세요.");
+      return;
+    }
+
+    try {
+      const userId = localStorage.getItem("user_id");
+      const userName = localStorage.getItem("user_name");
+      const token = localStorage.getItem("token");
+
+      const requestData = {
+        gallery_id: galleryId,
+        post_id: postId,
+        user_id: parseInt(userId, 10),
+        user_name: userName,
+        content: replyContent,
+        password: password,
+        parent_id: replyingTo,
+      };
+
+      await axios.post(
+        "http://127.0.0.1:8000/api/regions/gallery/post/comments",
+        requestData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      fetchComments();
+      setReplyingTo(null);
+      setReplyContent("");
+      setPassword("");
+    } catch (err) {
+      console.error("답글 작성 오류:", err);
+      alert("답글 작성 중 오류가 발생했습니다.");
+    }
+  };
+
   if (loading) {
     return <p className={styles.loading}>로딩 중...</p>;
   }
@@ -372,6 +423,12 @@ export default function PostDetailPage({ params }) {
                         </button>
                       </>
                     )}
+                    <button
+                      onClick={() => setReplyingTo(comment.id)}
+                      className={styles.replyButton}
+                    >
+                      답글
+                    </button>
                   </div>
                 </div>
                 {editingCommentId === comment.id ? (
@@ -414,35 +471,88 @@ export default function PostDetailPage({ params }) {
                     }}
                   />
                 )}
+                {comment.replies && comment.replies.length > 0 && (
+                  <ul className={styles.replies}>
+                    {comment.replies.map((reply) => (
+                      <li key={reply.id} className={styles.reply}>
+                        <div className={styles.replyHeader}>
+                          <span className={styles.replyAuthor}>{reply.username}</span>
+                        </div>
+                        <p
+                          dangerouslySetInnerHTML={{
+                            __html: DOMPurify.sanitize(reply.content),
+                          }}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </li>
             ))
           )}
         </ul>
-        <form onSubmit={handleCommentSubmit} className={styles.commentForm}>
-          <input
-            type="text"
-            value={userName || ""}
-            readOnly
-            placeholder={userName || "작성자 이름"}
-            className={styles.commentAuthor}
-          />
-          <textarea
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            placeholder="댓글을 입력하세요"
-            className={styles.commentInput}
-          ></textarea>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="비밀번호를 입력하세요"
-            className={styles.commentPassword}
-          />
-          <button type="submit" className={styles.commentButton}>
-            댓글 작성
-          </button>
-        </form>
+        {replyingTo ? (
+          <form onSubmit={handleReplySubmit} className={styles.commentForm}>
+            <div className={styles.replyingToHeader}>
+              {comments.find(c => c.id === replyingTo)?.username}님에게 답글 작성 중...
+              <button
+                onClick={() => setReplyingTo(null)}
+                className={styles.cancelReplyButton}
+              >
+                취소
+              </button>
+            </div>
+            <input
+              type="text"
+              value={userName || ""}
+              readOnly
+              placeholder={userName || "작성자 이름"}
+              className={styles.commentAuthor}
+            />
+            <textarea
+              value={replyContent}
+              onChange={(e) => setReplyContent(e.target.value)}
+              placeholder="답글을 입력하세요"
+              className={styles.commentInput}
+            ></textarea>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="비밀번호를 입력하세요"
+              className={styles.commentPassword}
+            />
+            <button type="submit" className={styles.commentButton}>
+              답글 작성
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleCommentSubmit} className={styles.commentForm}>
+            <input
+              type="text"
+              value={userName || ""}
+              readOnly
+              placeholder={userName || "작성자 이름"}
+              className={styles.commentAuthor}
+            />
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="댓글을 입력하세요"
+              className={styles.commentInput}
+            ></textarea>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="비밀번호를 입력하세요"
+              className={styles.commentPassword}
+            />
+            <button type="submit" className={styles.commentButton}>
+              댓글 작성
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );
