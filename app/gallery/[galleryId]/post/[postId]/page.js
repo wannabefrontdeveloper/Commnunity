@@ -17,6 +17,7 @@ export default function PostDetailPage({ params }) {
   const [password, setPassword] = useState("");
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingCommentContent, setEditingCommentContent] = useState("");
+  const [editingPassword, setEditingPassword] = useState("");
 
   const fetchPostDetail = useCallback(async () => {
     try {
@@ -137,7 +138,7 @@ export default function PostDetailPage({ params }) {
 
   const handleDelete = async () => {
     const currentUserName = localStorage.getItem("user_name");
-    
+
     if (!currentUserName) {
       alert("로그인이 필요합니다.");
       return;
@@ -187,8 +188,9 @@ export default function PostDetailPage({ params }) {
   };
 
   const handleDeleteComment = async (commentId, commentUsername) => {
+    console.log('Delete button clicked:', { commentId, commentUsername });
     const currentUserName = localStorage.getItem("user_name");
-    
+
     if (!currentUserName) {
       alert("로그인이 필요합니다.");
       return;
@@ -199,64 +201,89 @@ export default function PostDetailPage({ params }) {
       return;
     }
 
-    if (confirm("정말로 이 댓글을 삭제하시겠습니까?")) {
-      try {
-        const token = localStorage.getItem("token");
-        const userId = localStorage.getItem("user_id");
+    const password = prompt("댓글 작성 시 입력한 비밀번호를 입력하세요.");
+    if (!password) return;
 
-        await axios.delete(
-          "http://127.0.0.1:8000/api/regions/gallery/post/comments",
-          {
-            data: {
-              comment_id: commentId,
-              user_id: parseInt(userId, 10),
-            },
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+    try {
+      const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("user_id");
 
-        alert("댓글이 삭제되었습니다.");
-        fetchComments(); // 댓글 목록 새로고침
-      } catch (err) {
+      await axios.delete(
+        "http://127.0.0.1:8000/api/regions/gallery/post/comments",
+        {
+          data: {
+            post_id: parseInt(postId, 10),
+            comment_id: commentId,
+            user_id: parseInt(userId, 10),
+            password: password
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      alert("댓글이 삭제되었습니다.");
+      fetchComments();
+    } catch (err) {
+      console.error("Delete error:", err.response?.data);
+      if (err.response?.status === 402) {
+        alert("비밀번호가 올바르지 않습니다.");
+      } else if (err.response?.status === 403) {
+        alert("댓글을 삭제할 권한이 없습니다.");
+      } else if (err.response?.status === 404) {
+        alert("해당 댓글을 찾을 수 없습니다.");
+      } else if (err.response?.status === 422) {
+        alert("필수 정보가 누락되었습니다.");
+      } else {
         alert("댓글 삭제 중 오류가 발생했습니다.");
       }
     }
   };
 
-  const handleEditComment = async (commentId, currentContent, commentUsername) => {
+  const handleEditComment = async (
+    commentId,
+    currentContent,
+    commentUsername
+  ) => {
     const currentUserName = localStorage.getItem("user_name");
-    
+
     if (!currentUserName) {
       alert("로그인이 필요합니다.");
       return;
     }
-  
+
     if (currentUserName !== commentUsername) {
       alert("본인이 작성한 댓글만 수정할 수 있습니다.");
       return;
     }
-  
+
     // HTML 태그 제거하고 순수 텍스트만 추출
-    const tempDiv = document.createElement('div');
+    const tempDiv = document.createElement("div");
     tempDiv.innerHTML = currentContent;
     const plainText = tempDiv.textContent || tempDiv.innerText;
-  
+
     setEditingCommentId(commentId);
     setEditingCommentContent(plainText);
   };
 
   const handleSubmitCommentEdit = async (commentId) => {
     try {
+      if (!editingPassword.trim()) {
+        alert("댓글을 작성했을 때의 비밀번호를 입력해주세요.");
+        return;
+      }
+
       const token = localStorage.getItem("token");
       const userId = localStorage.getItem("user_id");
 
       await axios.put(
         "http://127.0.0.1:8000/api/regions/gallery/post/comments",
         {
+          post_id: parseInt(postId, 10),
           comment_id: commentId,
           user_id: parseInt(userId, 10),
+          password: editingPassword,
           content: editingCommentContent,
         },
         {
@@ -268,8 +295,10 @@ export default function PostDetailPage({ params }) {
 
       setEditingCommentId(null);
       setEditingCommentContent("");
-      fetchComments(); // 댓글 목록 새로고침
+      setEditingPassword("");
+      fetchComments();
     } catch (err) {
+      console.error("댓글 수정 오류:", err);
       alert("댓글 수정 중 오류가 발생했습니다.");
     }
   };
@@ -315,18 +344,28 @@ export default function PostDetailPage({ params }) {
             comments.map((comment, index) => (
               <li key={index} className={styles.comment}>
                 <div className={styles.commentHeader}>
-                  <span className={styles.commentAuthor}>{comment.username}</span>
+                  <span className={styles.commentAuthor}>
+                    {comment.username}
+                  </span>
                   <div className={styles.commentActions}>
                     {localStorage.getItem("user_name") === comment.username && (
                       <>
                         <button
-                          onClick={() => handleEditComment(comment.id, comment.content, comment.username)}
+                          onClick={() =>
+                            handleEditComment(
+                              comment.id,
+                              comment.content,
+                              comment.username
+                            )
+                          }
                           className={styles.commentEditButton}
                         >
                           수정
                         </button>
                         <button
-                          onClick={() => handleDeleteComment(comment.id, comment.username)}
+                          onClick={() =>
+                            handleDeleteComment(comment.id, comment.username)
+                          }
                           className={styles.commentDeleteButton}
                         >
                           삭제
@@ -342,6 +381,13 @@ export default function PostDetailPage({ params }) {
                       onChange={(e) => setEditingCommentContent(e.target.value)}
                       className={styles.editCommentInput}
                     />
+                    <input
+                      type="password"
+                      value={editingPassword}
+                      onChange={(e) => setEditingPassword(e.target.value)}
+                      placeholder="댓글을 작성했을 때의 비밀번호를 입력해주세요."
+                      className={styles.editCommentPassword}
+                    />
                     <div className={styles.editCommentButtons}>
                       <button
                         onClick={() => handleSubmitCommentEdit(comment.id)}
@@ -353,6 +399,7 @@ export default function PostDetailPage({ params }) {
                         onClick={() => {
                           setEditingCommentId(null);
                           setEditingCommentContent("");
+                          setEditingPassword("");
                         }}
                         className={styles.cancelButton}
                       >

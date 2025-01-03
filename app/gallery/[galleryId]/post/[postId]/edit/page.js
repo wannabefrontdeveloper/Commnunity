@@ -41,7 +41,6 @@ export default function EditPostPage({ params }) {
     }
   }, []);
 
-  // 기존 게시글 데이터 불러오기
   useEffect(() => {
     const fetchPost = async () => {
       try {
