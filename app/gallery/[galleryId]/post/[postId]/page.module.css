@@ -278,3 +278,40 @@
 .replyButton:hover {
   background-color: #e0e0e0;
 }
+
+.replies {
+  margin-left: 2rem;
+  margin-top: 0.5rem;
+  list-style: none;
+  padding-left: 1rem;
+  border-left: 2px solid #e0e0e0;
+}
+
+.reply {
+  background-color: #f8f9fa;
+  padding: 0.8rem;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+}
+
+.replyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.replyAuthor {
+  font-weight: 500;
+  color: #666;
+}
+
+.replyContent {
+  margin: 0;
+  color: #333;
+}
+
+.replyActions {
+  display: flex;
+  gap: 0.5rem;
+}

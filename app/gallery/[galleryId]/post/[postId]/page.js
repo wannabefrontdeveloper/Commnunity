@@ -190,7 +190,7 @@ export default function PostDetailPage({ params }) {
   };
 
   const handleDeleteComment = async (commentId, commentUsername) => {
-    console.log('Delete button clicked:', { commentId, commentUsername });
+    console.log("Delete button clicked:", { commentId, commentUsername });
     const currentUserName = localStorage.getItem("user_name");
 
     if (!currentUserName) {
@@ -217,7 +217,7 @@ export default function PostDetailPage({ params }) {
             post_id: parseInt(postId, 10),
             comment_id: commentId,
             user_id: parseInt(userId, 10),
-            password: password
+            password: password,
           },
           headers: {
             Authorization: `Bearer ${token}`,
@@ -330,7 +330,7 @@ export default function PostDetailPage({ params }) {
         user_name: userName,
         content: replyContent,
         password: password,
-        parent_id: replyingTo,
+        parent_comment_id: replyingTo,
       };
 
       await axios.post(
@@ -352,6 +352,107 @@ export default function PostDetailPage({ params }) {
       console.error("답글 작성 오류:", err);
       alert("답글 작성 중 오류가 발생했습니다.");
     }
+  };
+
+  const renderComments = (comments) => {
+    const parentComments = comments.filter(
+      (comment) => !comment.parent_comment_id
+    );
+
+    return parentComments.map((comment) => {
+      const replies = comments.filter(
+        (reply) => reply.parent_comment_id === comment.id
+      );
+
+      return (
+        <li key={comment.id} className={styles.comment}>
+          <div className={styles.commentHeader}>
+            <span className={styles.commentAuthor}>{comment.username}</span>
+            <div className={styles.commentActions}>
+              {localStorage.getItem("user_name") === comment.username && (
+                <>
+                  <button
+                    onClick={() =>
+                      handleEditComment(
+                        comment.id,
+                        comment.content,
+                        comment.username
+                      )
+                    }
+                    className={styles.commentEditButton}
+                  >
+                    수정
+                  </button>
+                  <button
+                    onClick={() =>
+                      handleDeleteComment(comment.id, comment.username)
+                    }
+                    className={styles.commentDeleteButton}
+                  >
+                    삭제
+                  </button>
+                </>
+              )}
+              <button
+                onClick={() => setReplyingTo(comment.id)}
+                className={styles.replyButton}
+              >
+                답글
+              </button>
+            </div>
+          </div>
+          <p
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(comment.content),
+            }}
+          />
+
+          {replies.length > 0 && (
+            <ul className={styles.replies}>
+              {replies.map((reply) => (
+                <li key={reply.id} className={styles.reply}>
+                  <div className={styles.replyHeader}>
+                    <span className={styles.replyAuthor}>
+                      ↳ {reply.username}
+                    </span>
+                    {localStorage.getItem("user_name") === reply.username && (
+                      <div className={styles.replyActions}>
+                        <button
+                          onClick={() =>
+                            handleEditComment(
+                              reply.id,
+                              reply.content,
+                              reply.username
+                            )
+                          }
+                          className={styles.commentEditButton}
+                        >
+                          수정
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleDeleteComment(reply.id, reply.username)
+                          }
+                          className={styles.commentDeleteButton}
+                        >
+                          삭제
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <p
+                    className={styles.replyContent}
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(reply.content),
+                    }}
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
+      );
+    });
   };
 
   if (loading) {
@@ -392,109 +493,14 @@ export default function PostDetailPage({ params }) {
           {comments.length === 0 ? (
             <p className={styles.noComments}>댓글이 없습니다.</p>
           ) : (
-            comments.map((comment, index) => (
-              <li key={index} className={styles.comment}>
-                <div className={styles.commentHeader}>
-                  <span className={styles.commentAuthor}>
-                    {comment.username}
-                  </span>
-                  <div className={styles.commentActions}>
-                    {localStorage.getItem("user_name") === comment.username && (
-                      <>
-                        <button
-                          onClick={() =>
-                            handleEditComment(
-                              comment.id,
-                              comment.content,
-                              comment.username
-                            )
-                          }
-                          className={styles.commentEditButton}
-                        >
-                          수정
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleDeleteComment(comment.id, comment.username)
-                          }
-                          className={styles.commentDeleteButton}
-                        >
-                          삭제
-                        </button>
-                      </>
-                    )}
-                    <button
-                      onClick={() => setReplyingTo(comment.id)}
-                      className={styles.replyButton}
-                    >
-                      답글
-                    </button>
-                  </div>
-                </div>
-                {editingCommentId === comment.id ? (
-                  <div className={styles.editCommentForm}>
-                    <textarea
-                      value={editingCommentContent}
-                      onChange={(e) => setEditingCommentContent(e.target.value)}
-                      className={styles.editCommentInput}
-                    />
-                    <input
-                      type="password"
-                      value={editingPassword}
-                      onChange={(e) => setEditingPassword(e.target.value)}
-                      placeholder="댓글을 작성했을 때의 비밀번호를 입력해주세요."
-                      className={styles.editCommentPassword}
-                    />
-                    <div className={styles.editCommentButtons}>
-                      <button
-                        onClick={() => handleSubmitCommentEdit(comment.id)}
-                        className={styles.saveButton}
-                      >
-                        저장
-                      </button>
-                      <button
-                        onClick={() => {
-                          setEditingCommentId(null);
-                          setEditingCommentContent("");
-                          setEditingPassword("");
-                        }}
-                        className={styles.cancelButton}
-                      >
-                        취소
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <p
-                    dangerouslySetInnerHTML={{
-                      __html: DOMPurify.sanitize(comment.content),
-                    }}
-                  />
-                )}
-                {comment.replies && comment.replies.length > 0 && (
-                  <ul className={styles.replies}>
-                    {comment.replies.map((reply) => (
-                      <li key={reply.id} className={styles.reply}>
-                        <div className={styles.replyHeader}>
-                          <span className={styles.replyAuthor}>{reply.username}</span>
-                        </div>
-                        <p
-                          dangerouslySetInnerHTML={{
-                            __html: DOMPurify.sanitize(reply.content),
-                          }}
-                        />
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
-            ))
+            renderComments(comments)
           )}
         </ul>
         {replyingTo ? (
           <form onSubmit={handleReplySubmit} className={styles.commentForm}>
             <div className={styles.replyingToHeader}>
-              {comments.find(c => c.id === replyingTo)?.username}님에게 답글 작성 중...
+              {comments.find((c) => c.id === replyingTo)?.username}님에게 답글
+              작성 중...
               <button
                 onClick={() => setReplyingTo(null)}
                 className={styles.cancelReplyButton}
