@@ -1,7 +1,7 @@
 import axios from "axios";
 import CreateGalleryButton from "./CreateGalleryButton";
 import Link from "next/link";
-import SearchBox from "@/components/SearchBox";
+import SearchBox from "@/src/SearchBox";
 
 export default async function GalleryPage({ params }) {
   const { regionId } = await params;

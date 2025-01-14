@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Link from 'next/link';
-import SearchBox from '@/components/SearchBox';
+import SearchBox from '@/src/SearchBox';
 
 export default async function HomePage() {
   let regions = [];
